@@ -1,0 +1,135 @@
+{
+  "project_info": {
+    "project_number": "576727551386",
+    "firebase_url": "https://gquiz-6a887.firebaseio.com",
+    "project_id": "gquiz-6a887",
+    "storage_bucket": "gquiz-6a887.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:576727551386:android:c31259708e95a051a83e23",
+        "android_client_info": {
+          "package_name": "com.example.gquiz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "576727551386-gugehfm80or6dch3ov8j4e1np7u9gbq0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0wY56GF03ZAoxlc3gPuRP6dj1JAO40SA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "576727551386-gugehfm80or6dch3ov8j4e1np7u9gbq0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "576727551386-kvh7qeibmnit49ja1rqbdeoo58mbvb90.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.gquiz"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:576727551386:android:63e33589d9c28e9fa83e23",
+        "android_client_info": {
+          "package_name": "com.galaxycoperation.gquiz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "576727551386-uh37h3ka2uppet7hgp11ha6kfogh7sl8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.galaxycoperation.gquiz",
+            "certificate_hash": "03a505ea6368a2c432b8f20d31e07d3fa7c83c93"
+          }
+        },
+        {
+          "client_id": "576727551386-gugehfm80or6dch3ov8j4e1np7u9gbq0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0wY56GF03ZAoxlc3gPuRP6dj1JAO40SA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "576727551386-gugehfm80or6dch3ov8j4e1np7u9gbq0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "576727551386-kvh7qeibmnit49ja1rqbdeoo58mbvb90.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.gquiz"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:576727551386:android:c4935d0d2e510d9ea83e23",
+        "android_client_info": {
+          "package_name": "com.galaxycoperation.gquizManager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "576727551386-4hqcmjmnt956sdnu8b71vd3nnvgjl8cj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.galaxycoperation.gquizManager",
+            "certificate_hash": "03a505ea6368a2c432b8f20d31e07d3fa7c83c93"
+          }
+        },
+        {
+          "client_id": "576727551386-gugehfm80or6dch3ov8j4e1np7u9gbq0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0wY56GF03ZAoxlc3gPuRP6dj1JAO40SA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "576727551386-gugehfm80or6dch3ov8j4e1np7u9gbq0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "576727551386-kvh7qeibmnit49ja1rqbdeoo58mbvb90.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.gquiz"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
