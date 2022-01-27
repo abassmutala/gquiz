@@ -4,14 +4,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gquiz/adhelper.dart';
 import 'package:gquiz/spin.dart';
-import 'package:gquiz/models/Scores.dart';
 import 'package:gquiz/models/score.dart';
 import 'package:gquiz/screens/battle.dart';
-import 'package:gquiz/screens/category.dart';
-import 'package:gquiz/screens/difficulty.dart';
-import 'package:gquiz/screens/finish.dart';
 import 'package:gquiz/screens/home.dart';
 import 'package:flutter/services.dart';
 import 'package:gquiz/screens/scorebaord.dart';
@@ -222,12 +217,12 @@ class Startup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(80),
+      padding: const EdgeInsets.all(80),
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
       color: const Color(0xffE9CC6D),
-      child: Center(
-        child: new Image(image: new AssetImage("assets/animation.gif")),
+      child: const Center(
+        child: Image(image: AssetImage("assets/animation.gif")),
       ),
     );
   }
@@ -271,13 +266,13 @@ class _MyBottomNavigationState extends State<MyBottomNavigation> {
   Widget build(BuildContext context) {
     List<Widget> _children = [
       _profile
-          ? UserProfile()
+          ? const UserProfile()
           : Home(
               update: _update,
             ),
-      new SpinngWheel(),
-      new Battle(),
-      new Scoreboard()
+      SpinngWheel(),
+      Battle(),
+      const Scoreboard()
     ];
 
     return Scaffold(
