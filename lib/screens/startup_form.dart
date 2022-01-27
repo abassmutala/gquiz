@@ -68,7 +68,7 @@ class _StartUpFormState extends State<StartUpForm> {
                     height: 15,
                   ),
                   Text(
-                    "Welcome lets work together,",
+                    "Welcome lets work togetherssd  dsd,",
                     style: TextStyle(
                         fontSize: large
                             ? 40
