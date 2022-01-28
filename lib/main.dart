@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:gquiz/constants/app_themes.dart';
 import 'package:gquiz/spin.dart';
 import 'package:gquiz/models/score.dart';
 import 'package:gquiz/screens/battle.dart';
@@ -184,8 +185,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-
+        const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
     void _update(SharedPreferences prefs) {
       setState(() {
         form = false;
@@ -197,9 +197,9 @@ class _MyAppState extends State<MyApp> {
     return KeyedSubtree(
       key: UniqueKey(),
       child: MaterialApp(
-        theme: ThemeData(fontFamily: 'Poppins'),
+        theme: gQuizLightTheme,
         home: !exist && !form
-            ? Startup()
+            ? const Startup()
             : form
                 ? StartUpForm(
                     update: _update,
