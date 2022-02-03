@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
+const Color kGQuizLaunchBG = Color(0xffE9CC6D);
 const Color kGQuizPrimary = Color(0xFFFED330);
 // const Color kGQuizPrimaryDark = Colors.blue;
 
 const Color kGQuizPrimaryVariant = Color(0xffFED330);
 
-const Color kGQuizLightAccent = Colors.blueAccent;
-// const Color kGQuizDarkAccent = Color(0xFF33FFBB);
+const Color kGQuizAccent = Color(0xFF5DE2A2);
 
 const Color kGQuizError = Color(0xFFD50000);
 // const Color kGQuizWarning = Color(0xFFFFA000);

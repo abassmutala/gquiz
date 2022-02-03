@@ -4,7 +4,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:gquiz/constants/app_colors.dart';
 import 'package:gquiz/constants/app_themes.dart';
+import 'package:gquiz/constants/constants.dart';
 import 'package:gquiz/spin.dart';
 import 'package:gquiz/models/score.dart';
 import 'package:gquiz/screens/battle.dart';
@@ -22,11 +24,15 @@ import 'models/user.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Firebase.initializeApp();
-  Admob.initialize();
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+  );
   runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key key}) : super(key: key);
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -50,14 +56,13 @@ getProfile() async {
         .get()
         .then((value) {
       List<Object> qoutes = value["quotes"];
-      print(qoutes.length.toString());
-      print(qoutes[1].toString());
+
       globals.qoutes = qoutes;
     });
 
     myNew = new User.fromJson(event.data());
     globals.myUser = myNew;
-    print(myNew.firstname);
+    debugPrint(myNew.firstname);
   });
 }
 
@@ -70,12 +75,11 @@ getscore() async {
     if (value.exists) {
       List<Score> allsubjects = [];
       List<dynamic> subjects = value["subjects"];
-      subjects.forEach((element) {
+      for (var element in subjects) {
         Map<String, dynamic> nes = Map<String, dynamic>.from(element);
         Score myscore = Score.fromJson(nes);
         allsubjects.add(myscore);
-        print(myscore.name);
-      });
+      }
       globals.subjects = allsubjects;
     } else {
       List<Map<String, Object>> subjects = [];
@@ -123,7 +127,7 @@ getscore() async {
       await FirebaseFirestore.instance
           .collection("Score")
           .doc(_prefs.getString("firstname"))
-          .set({"subjects": subjects}).then((value) => print("done"));
+          .set({"subjects": subjects}).then((value) => debugPrint("done"));
     }
   });
 }
@@ -144,7 +148,8 @@ class _MyAppState extends State<MyApp> {
   bool isLoading;
 
   @override
-  Future<void> initState() {
+  initState() {
+    super.initState();
     getprefs();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -156,19 +161,16 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  Future<int> getprefs() async {
+  getprefs() async {
     _prefs = await SharedPreferences.getInstance();
 
     if (_prefs.getString('firstname') == null) {
-      print("null");
-
       setState(() {
         form = true;
       });
     } else {
-      print("not null");
       getProfile();
-      Future.delayed(Duration(milliseconds: 5000), () {
+      Future.delayed(const Duration(milliseconds: 5000), () {
         setState(() {
           changeScreen();
         });
@@ -184,8 +186,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-        const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
     void _update(SharedPreferences prefs) {
       setState(() {
         form = false;
@@ -194,19 +194,16 @@ class _MyAppState extends State<MyApp> {
       });
     }
 
-    return KeyedSubtree(
-      key: UniqueKey(),
-      child: MaterialApp(
-        theme: gQuizLightTheme,
-        home: !exist && !form
-            ? const Startup()
-            : form
-                ? StartUpForm(
-                    update: _update,
-                  )
-                : MyBottomNavigation(),
-        debugShowCheckedModeBanner: false,
-      ),
+    return MaterialApp(
+      theme: gQuizLightTheme,
+      home: !exist && !form
+          ? const Startup()
+          : form
+              ? StartUpForm(
+                  update: _update,
+                )
+              : const MyBottomNavigation(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -220,7 +217,7 @@ class Startup extends StatelessWidget {
       padding: const EdgeInsets.all(80),
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
-      color: const Color(0xffE9CC6D),
+      color: kGQuizLaunchBG,
       child: const Center(
         child: Image(image: AssetImage("assets/animation.gif")),
       ),
@@ -229,13 +226,11 @@ class Startup extends StatelessWidget {
 }
 
 class MyBottomNavigation extends StatefulWidget {
-  int index;
-  MyBottomNavigation({this.index});
+  const MyBottomNavigation({Key key}) : super(key: key);
+
   @override
   _MyBottomNavigationState createState() => _MyBottomNavigationState();
 }
-
-bool _profile = false;
 
 class _MyBottomNavigationState extends State<MyBottomNavigation> {
   void _update(bool profile) {
@@ -243,9 +238,8 @@ class _MyBottomNavigationState extends State<MyBottomNavigation> {
   }
 
   int _currentIndex = 0;
-
   bool battlemood = false;
-  // bool one=true, two=false,three=false,four=false;
+  bool _profile = false;
 
   void onTappedBar(int index) {
     setState(() {
@@ -253,17 +247,21 @@ class _MyBottomNavigationState extends State<MyBottomNavigation> {
         setState(() {
           battlemood = true;
         });
-      } else {
-        setState(() {
-          battlemood = false;
-        });
       }
       _currentIndex = index;
     });
   }
 
+  final List<BottomNavItem> bottomNavItems = [
+    BottomNavItem(name: '', icon: 'assets/home.svg', index: 0),
+    BottomNavItem(name: '', icon: 'assets/cart.svg', index: 1),
+    BottomNavItem(name: '', icon: 'assets/online.svg', index: 2),
+    BottomNavItem(name: '', icon: 'assets/scoreboard.svg', index: 3),
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     List<Widget> _children = [
       _profile
           ? const UserProfile()
@@ -271,201 +269,91 @@ class _MyBottomNavigationState extends State<MyBottomNavigation> {
               update: _update,
             ),
       SpinngWheel(),
-      Battle(),
+      const Battle(),
       const Scoreboard()
     ];
 
     return Scaffold(
-      body: Scaffold(
-        backgroundColor:
-            _currentIndex == 3 ? const Color(0xff5DE2A2) : Colors.white,
-        appBar: _currentIndex == 3
-            ? AppBar(
-                elevation: 0,
-                backgroundColor: const Color(0xff5DE2A2),
-                title: Text("Leaderboard",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: "Poppins_Bold",
-                        fontSize: 25)),
-              )
-            : _currentIndex == 2
-                ? AppBar(
-                    elevation: 0,
-                    backgroundColor: const Color(0xffC4D5FE),
-                    title: Text("Battle",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: "Poppins_Bold",
-                            fontSize: 25)),
-                  )
-                : _profile
-                    ? AppBar(
-                        leading: GestureDetector(
-                            onTap: () {
-                              _update(false);
-                            },
-                            child: Container(
-                                padding: EdgeInsets.all(15),
-                                child: SvgPicture.asset(
-                                  "assets/backbutton.svg",
-                                  height: 20,
-                                ))),
-                        elevation: 0,
-                        backgroundColor: const Color(0xffFED330),
-                        title: Text("Profile",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: "Poppins_Bold",
-                                fontSize: 25)),
-                      )
-                    : null,
-        body: Stack(
-          children: [
-            SingleChildScrollView(child: _children[_currentIndex]),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(30),
-                      topLeft: Radius.circular(30)),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black38.withOpacity(0.1),
-                        spreadRadius: 5,
-                        blurRadius: 20),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30.0),
-                    topRight: Radius.circular(30.0),
-                  ),
+      appBar: _profile
+          ? AppBar(
+              leading: GestureDetector(
+                  onTap: () {
+                    _update(false);
+                  },
                   child: Container(
-                    color: Colors.white,
-                    child: BottomNavigationBar(
-                      type: BottomNavigationBarType.fixed,
-                      onTap: onTappedBar,
-                      currentIndex: _currentIndex,
-                      selectedItemColor: const Color(0xff9F9F9F),
-                      iconSize: 25,
-                      unselectedItemColor: const Color(0xff9F9F9F),
-                      items: <BottomNavigationBarItem>[
-                        BottomNavigationBarItem(
-                          icon: Container(
-                              width: large
-                                  ? 55
-                                  : normal
-                                      ? 45
-                                      : 40,
-                              height: large
-                                  ? 55
-                                  : normal
-                                      ? 45
-                                      : 40,
-                              decoration: BoxDecoration(
-                                  color: _currentIndex == 0
-                                      ? Colors.grey[200]
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(55)),
-                              padding: EdgeInsets.all(large ? 15 : 10),
-                              child: SvgPicture.asset(
-                                "assets/home.svg",
-                                height: 25,
-                                color: Colors.grey,
-                              )),
-                          label: "",
-                        ),
-                        BottomNavigationBarItem(
-                          icon: Container(
-                              width: large
-                                  ? 55
-                                  : normal
-                                      ? 45
-                                      : 40,
-                              height: large
-                                  ? 55
-                                  : normal
-                                      ? 45
-                                      : 40,
-                              decoration: BoxDecoration(
-                                  color: _currentIndex == 1
-                                      ? Colors.grey[200]
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(55)),
-                              padding: EdgeInsets.all(large ? 15 : 10),
-                              child: SvgPicture.asset(
-                                "assets/cart.svg",
-                                height: 25,
-                                color: Colors.grey,
-                              )),
-                          label: "",
-                        ),
-                        BottomNavigationBarItem(
-                          icon: Container(
-                              width: large
-                                  ? 55
-                                  : normal
-                                      ? 45
-                                      : 40,
-                              height: large
-                                  ? 55
-                                  : normal
-                                      ? 45
-                                      : 40,
-                              decoration: BoxDecoration(
-                                  color: _currentIndex == 2
-                                      ? Colors.grey[200]
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(55)),
-                              padding: EdgeInsets.all(large ? 15 : 10),
-                              child: SvgPicture.asset(
-                                "assets/online.svg",
-                                height: 25,
-                                color: Colors.grey,
-                              )),
-                          label: "",
-                        ),
-                        BottomNavigationBarItem(
-                          icon: Container(
-                              width: large
-                                  ? 55
-                                  : normal
-                                      ? 45
-                                      : 40,
-                              height: large
-                                  ? 55
-                                  : normal
-                                      ? 45
-                                      : 40,
-                              decoration: BoxDecoration(
-                                  color: _currentIndex == 3
-                                      ? Colors.grey[200]
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(55)),
-                              padding: EdgeInsets.all(large
-                                  ? 15
-                                  : normal
-                                      ? 10
-                                      : 8),
-                              child: SvgPicture.asset(
-                                "assets/scoreboard.svg",
-                                height: 25,
-                                color: Colors.grey,
-                              )),
-                          label: "",
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+                      padding: const EdgeInsets.all(15),
+                      child: SvgPicture.asset(
+                        "assets/backbutton.svg",
+                        height: 20,
+                      ))),
+              elevation: 0,
+              backgroundColor: const Color(0xffFED330),
+              title: Text("Profile", style: theme.textTheme.headline6),
+            )
+          : null,
+      body: _children[_currentIndex],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+            topLeft: Corners.xlRadius,
+            topRight: Corners.xlRadius,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black38.withOpacity(0.1),
+              // spreadRadius: 5,
+              blurRadius: 20,
             ),
           ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.only(
+            topLeft: Corners.xlRadius,
+            topRight: Corners.xlRadius,
+          ),
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            onTap: onTappedBar,
+            currentIndex: _currentIndex,
+            selectedItemColor: const Color(0xff9F9F9F),
+            iconSize: 25,
+            unselectedItemColor: const Color(0xff9F9F9F),
+            items: bottomNavItems
+                .map(
+                  (item) => BottomNavigationBarItem(
+                    icon: Container(
+                      width: 45,
+                      height: 45,
+                      decoration: BoxDecoration(
+                        color: _currentIndex == 0
+                            ? Colors.grey[200]
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(55),
+                      ),
+                      padding: const EdgeInsets.all(
+                        10,
+                      ),
+                      child: SvgPicture.asset(
+                        item.icon,
+                        height: 25,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    label: item.name,
+                  ),
+                )
+                .toList(),
+          ),
         ),
       ),
     );
   }
+}
+
+class BottomNavItem {
+  final String name;
+  final String icon;
+  final int index;
+
+  BottomNavItem({this.name, this.icon, this.index});
 }

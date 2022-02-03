@@ -30,32 +30,21 @@ ThemeData _gQuizLightTheme() {
       // activeTrackColor: kGQuizLightAccent,
     ),
     iconTheme: base.iconTheme.copyWith(color: kGQuizOnLightSurface),
-    toggleableActiveColor: kGQuizLightAccent,
+    toggleableActiveColor: kGQuizAccent,
     cardTheme: base.cardTheme.copyWith(color: kGQuizWhiteBackground),
-    bottomNavigationBarTheme: base.bottomNavigationBarTheme.copyWith(
-        backgroundColor: kGQuizPrimary,
-        selectedIconTheme: base.iconTheme.copyWith(color: kGQuizLightAccent),
-        ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
         foregroundColor: kGQuizWhiteBackground),
     bottomSheetTheme: base.bottomSheetTheme.copyWith(
       // backgroundColor: kGQuizBackgroundWhite,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
-          topLeft: Corners.xxlRadius,
-          topRight: Corners.xxlRadius,
+          topLeft: Corners.xlRadius,
+          topRight: Corners.xlRadius,
         ),
       ),
     ),
     visualDensity: VisualDensity.adaptivePlatformDensity,
     colorScheme: _gQuizLightColorScheme,
-//cupertinoOverrideTheme: const NoDefaultCupertinoThemeData() TODO
-    // primaryIconTheme: _customIconTheme(base.iconTheme),
-    // inputDecorationTheme: const InputDecorationTheme(border: CutCornersBorder()),
-    // textTheme: _buildShrineTextTheme(base.textTheme),
-    // primaryTextTheme: _buildShrineTextTheme(base.primaryTextTheme),
-    // accentTextTheme: _buildShrineTextTheme(base.accentTextTheme),
-    // iconTheme: _customIconTheme(base.iconTheme),
   );
 }
 
@@ -76,24 +65,27 @@ TextTheme _gQuizLightTextTheme(TextTheme base) {
         ),
         headline5: base.headline5.copyWith(
           fontFamily: 'Gilroy',
-          // fontSize: 24.0,
-          fontWeight: FontWeight.w500,
+          fontSize: 25.0,
+          fontWeight: FontWeight.w800,
+          height: 1,
         ),
         headline6: base.headline6.copyWith(
           fontFamily: 'Gilroy',
-          // fontSize: 20.0,
+          fontSize: 22.0,
           fontWeight: FontWeight.w500,
           letterSpacing: 0.15,
+          height: 1,
+          color: Colors.white,
         ),
         subtitle1: base.subtitle1.copyWith(
           fontFamily: 'Gilroy',
-          fontSize: 17.0,
+          fontSize: 18.0,
           fontWeight: FontWeight.w500,
           letterSpacing: 0.15,
         ),
         subtitle2: base.subtitle2.copyWith(
           fontFamily: 'Gilroy',
-          // fontSize: 14.0,
+          fontSize: 15.0,
           fontWeight: FontWeight.w500,
           letterSpacing: 0.1,
         ),
@@ -114,7 +106,7 @@ TextTheme _gQuizLightTextTheme(TextTheme base) {
           fontSize: 17.0,
           fontWeight: FontWeight.w500,
           letterSpacing: 1.25,
-          color: kGQuizLightAccent,
+          color: kGQuizAccent,
         ),
         caption: base.caption.copyWith(
           fontFamily: 'Gilroy',
@@ -129,8 +121,8 @@ TextTheme _gQuizLightTextTheme(TextTheme base) {
 ColorScheme _gQuizLightColorScheme = const ColorScheme.light().copyWith(
   primary: kGQuizPrimary,
   primaryVariant: kGQuizPrimaryVariant,
-  secondary: kGQuizLightAccent,
-  secondaryVariant: kGQuizLightAccent,
+  secondary: kGQuizAccent,
+  secondaryVariant: kGQuizAccent,
   surface: kGQuizWhiteBackground,
   error: kGQuizError,
   onError: kGQuizOnLightSurface,

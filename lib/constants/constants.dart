@@ -41,8 +41,13 @@ class Corners {
   static Radius medRadius = Radius.circular(Doubles.med);
   static BorderRadius lgBorder = BorderRadius.all(lgRadius);
   static Radius lgRadius = Radius.circular(Doubles.lg);
-  static BorderRadius xxlBorder = BorderRadius.all(xxlRadius);
-  static Radius xxlRadius = Radius.circular(Doubles.xl);
+  static BorderRadius xlBorder = BorderRadius.all(xlRadius);
+  static Radius xlRadius = Radius.circular(Doubles.xl);
+}
+
+class TimeLengths {
+  static Duration fullSec = const Duration(seconds: 1);
+  static Duration halfSec = const Duration(milliseconds: 500);
 }
 
 class Insets {

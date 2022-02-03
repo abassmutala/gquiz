@@ -1,181 +1,152 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gquiz/constants/constants.dart';
 import 'package:gquiz/main.dart';
 import 'package:gquiz/models/user.dart';
 import 'package:gquiz/screens/home.dart';
+import 'package:gquiz/utils/utilities.dart';
 import 'package:intl/intl.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:introduction_screen/introduction_screen.dart';
 import 'package:gquiz/global/global.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
 
-bool validated = false;
-Color myColor = null;
-User myUser = User();
-bool loading = false;
-final _formKey = GlobalKey<FormState>();
-List<String> suggestnames = [];
-
 class StartUpForm extends StatefulWidget {
+  const StartUpForm({Key key, this.update}) : super(key: key);
   final ValueChanged<SharedPreferences> update;
-
-  StartUpForm({this.update});
 
   @override
   _StartUpFormState createState() => _StartUpFormState();
 }
 
 class _StartUpFormState extends State<StartUpForm> {
-  List<Widget> getpages() {
-    return [
-      welcome(),
-      const MyForm(),
-      Profile(widget.update, loading),
-    ];
-  }
+  final PageController _viewController = PageController();
 
-  Widget welcome() {
-    return Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage("assets/startback.png"), fit: BoxFit.cover)),
-      child: Container(
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.all(60),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  large
-                      ? SizedBox(
-                          height: 60,
-                        )
-                      : normal
-                          ? SizedBox(
-                              height: 50,
-                            )
-                          : SizedBox(
-                              height: 30,
-                            ),
-                  SvgPicture.asset("assets/logo.svg"),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Text(
-                    "Welcome\nto the\nlearning app",
-                    style: TextStyle(
-                      fontSize: large
-                          ? 40
-                          : normal
-                              ? 35
-                              : 25,
-                      fontFamily: "Poppins_Bold",
-                      height: 1,
-                    ),
-                  ),
-                  SizedBox(
-                    height: large ? 20 : 18,
-                  ),
-                  Text(
-                    "The App that lets you learn new things in a better way",
-                    style: TextStyle(fontSize: 22, fontFamily: "Poppins"),
-                  ),
-                ],
-              ),
-            ),
-            Spacer(),
-            Row(
-              children: [
-                Container(
-                    child: SvgPicture.asset(
-                  "assets/space.svg",
-                  width: large
-                      ? 400
-                      : normal
-                          ? 310
-                          : 290,
-                )),
-              ],
-            ),
-            SizedBox(
-              height: large ? 150 : 80,
-            )
-          ],
-        ),
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    return Scaffold(
+      body: PageView(
+        controller: _viewController,
+        children: getpages(theme),
       ),
     );
   }
 
+  Widget welcome(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.all(48),
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+            image: AssetImage("assets/startback.png"), fit: BoxFit.cover),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Spacing.verticalSpace48,
+          SvgPicture.asset("assets/logo.svg"),
+          Spacing.verticalSpace16,
+          Text(
+            "Welcome\nto the\nlearning app",
+            style: theme.textTheme.headline5,
+          ),
+          Spacing.verticalSpace24,
+          Text(
+            "The App that lets you learn new things in a better way",
+            style: theme.textTheme.headline6,
+          ),
+          const Spacer(),
+          SvgPicture.asset(
+            "assets/space.svg",
+            width: 290,
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: TextButton(
+              onPressed: () {
+                _viewController.nextPage(
+                    duration: TimeLengths.halfSec, curve: Curves.easeIn);
+              },
+              child: const Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: Colors.black,
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  List<Widget> getpages(ThemeData theme) {
+    return [
+      welcome(theme),
+      SignUpView(
+        update: widget.update,
+      ),
+    ];
+  }
+}
+
+class SignUpView extends StatelessWidget {
+  SignUpView({Key key, @required this.update}) : super(key: key);
+  final ValueChanged<SharedPreferences> update;
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: GestureDetector(
-          onTap: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
-          child: Stack(
+    final ThemeData theme = Theme.of(context);
+    return Scaffold(
+      appBar: _signUpAppbar(theme),
+      body: SafeArea(
+        child: Container(
+          padding: kTabLabelPadding,
+          child: Column(
             children: [
-              IntroductionScreen(
-                color: Colors.black,
-                done: const Text(
-                  "Done",
-                  style: TextStyle(color: Colors.black),
-                ),
-                onDone: () async {
-                  setState(() {
-                    loading = false;
-                  });
-                  String now = DateFormat("yyyy-MM-dd").format(DateTime.now());
-                  myUser = User(
-                    firstname: firstname,
-                    lastname: lastname,
-                    initials: firstname[0] + lastname[0],
-                    gender: gender,
-                    number: telnumber,
-                    created: now,
-                    birthday: "",
-                    image: null,
-                    color: globals.colorListfixed.indexOf(myColor),
-                    level: 1,
-                    xp: 0,
-                    score: 0,
-                    coins: 0,
-                    rank: 0,
-                  );
-
-                  await FirebaseFirestore.instance
-                      .collection("User")
-                      .doc(firstname)
-                      .set(myUser.toJson());
-                  SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  await prefs.setString("firstname", firstname);
-                  widget.update(prefs);
-                  Navigator.of(context).push(
-                    CustomPageRoute(
-                      builder: (context) => MyApp(),
+              Expanded(
+                child: ListView(
+                  children: [
+                    Spacing.verticalSpace48,
+                    createAccountForm(theme),
+                    Spacing.verticalSpace48,
+                    InkWell(
+                      onTap: () {},
+                      child: Text(
+                        "Already a user? Sign In",
+                        style: theme.textTheme.subtitle1,
+                      ),
                     ),
-                  );
-                },
-                onChange: (index) {
-                  if (index == 1) {
-                    _formKey.currentState.validate() ? () {} : null;
-                  }
-                  if (index == 2) {
-                    colorList.shuffle();
-                    myColor = colorList[0];
-                  }
-                },
-                next: const Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  color: Colors.black,
+                  ],
                 ),
-                rawPages: getpages(),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    if (_formKey.currentState.validate()) {
+                      Navigator.of(context).push(
+                        CustomPageRoute(
+                          builder: (context) => ProfileView(
+                            firstName: _firstNameController.text,
+                            lastName: _lastNameController.text,
+                            update: update,
+                          ),
+                        ),
+                      );
+                      // _viewController.nextPage(
+                      //     duration: TimeLengths.halfSec, curve: Curves.easeIn);
+                    } else {
+                      return null;
+                    }
+                  },
+                  child: const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: Colors.black,
+                  ),
+                ),
               ),
             ],
           ),
@@ -183,177 +154,83 @@ class _StartUpFormState extends State<StartUpForm> {
       ),
     );
   }
-}
 
-class CustomPageRoute extends MaterialPageRoute {
-  @override
-  Duration get transitionDuration => const Duration(milliseconds: 500);
-
-  CustomPageRoute({builder}) : super(builder: builder);
-}
-
-String gender = " ";
-PhoneNumber number = PhoneNumber(isoCode: 'GH');
-String firstname, lastname, telnumber;
-
-class MyForm extends StatefulWidget {
-  const MyForm({Key key}) : super(key: key);
-
-  @override
-  _MyFormState createState() => _MyFormState();
-}
-
-final TextEditingController _firstNameController = TextEditingController();
-final TextEditingController _lastNameController = TextEditingController();
-
-class _MyFormState extends State<MyForm> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(120.0),
-        child: AnimatedContainer(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-          duration: const Duration(seconds: 1),
-          decoration: const BoxDecoration(
-              color: Color(0xffFED330),
-              borderRadius:
-                  BorderRadius.vertical(bottom: Radius.circular(50.0))),
+  PreferredSize _signUpAppbar(ThemeData theme) {
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(100.0),
+      child: AnimatedContainer(
+        padding: const EdgeInsets.all(20),
+        duration: TimeLengths.fullSec,
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primary,
+          borderRadius: Corners.xlBorder,
+        ),
+        child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(
-                height: 40,
-              ),
               Text(
                 "Create a profile",
-                style: TextStyle(
-                    fontSize: large
-                        ? 34
-                        : normal
-                            ? 34
-                            : 30,
-                    fontFamily: "Poppins_Bold"),
+                style: theme.textTheme.headline5,
               ),
-              const SizedBox(
-                height: 8,
-              ),
-              const Text(
-                "Fill the forms with your personal info",
-                style: TextStyle(fontSize: 18, fontFamily: "Poppins"),
+              Spacing.verticalSpace8,
+              Text(
+                "Fill the form with your personal info",
+                style: theme.textTheme.subtitle1,
               ),
             ],
           ),
         ),
       ),
-      body: SafeArea(
-        child: ListView(
-          padding: kTabLabelPadding,
-          children: [
-            const SizedBox(
-              height: 24.0,
-            ),
-            createAccountForm(),
-            const SizedBox(
-              height: 20,
-            ),
-            RichText(
-              text: const TextSpan(
-                  text: "Already a user? ",
-                  style: TextStyle(fontFamily: "Poppins", color: Colors.black),
-                  children: [
-                    TextSpan(
-                      text: 'Sign In',
-                      style:
-                          TextStyle(fontFamily: "Poppins", color: Colors.blue),
-                    )
-                  ]),
-            ),
-          ],
-        ),
-      ),
     );
-    // Container(
-    //   decoration: BoxDecoration(color: Colors.white),
-    //   child: Stack(
-    //     children: [
-    //       SingleChildScrollView(
-    //         child: Container(
-    //           padding: EdgeInsets.all(30),
-    //           child: Column(
-    //             children: [
-    //               SizedBox(
-    //                 height: 150,
-    //               ),
-    //               SingleChildScrollView(child: InputForm()),
-    //             ],
-    //           ),
-    //         ),
-    //       ),
-    //       Container(
-    //           padding: EdgeInsets.symmetric(horizontal: mypadding),
-    //           width: MediaQuery.of(context).size.width,
-    //           height: 160,
-    //           decoration: BoxDecoration(
-    //             color: const Color(0xffFED330),
-    //             borderRadius: BorderRadius.only(
-    //                 bottomRight: Radius.circular(50),
-    //                 bottomLeft: Radius.circular(50)),
-    //           ),
-    //           child: Container()),
-    //
-    //     ],
-    //   ),
-    // );
   }
 
-  Widget createAccountForm() {
+  Widget createAccountForm(ThemeData theme) {
     return Form(
       key: _formKey,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextFormField(
             controller: _firstNameController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: "First Name",
-              contentPadding:
-                  EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+              contentPadding: Insets.standardPadding,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(30.0),
-                ),
+                borderRadius: Corners.xlBorder,
               ),
             ),
-            style: const TextStyle(fontFamily: "Poppins", fontSize: 15),
+            style: theme.textTheme.subtitle1,
+            // onChanged: (val) {
+            //   setState(() {
+            //     _firstname = val;
+            //   });
+            // },
             validator: (value) =>
-                value.isEmpty ? 'Last name cannot be blank' : null,
+                value.isEmpty ? 'First name cannot be blank' : null,
             textInputAction: TextInputAction.next,
           ),
-          const SizedBox(
-            height: 15,
-          ),
+          Spacing.verticalSpace16,
           TextFormField(
             controller: _lastNameController,
-            validator: (value) =>
-                value.isEmpty ? 'Last name cannot be blank' : null,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: "Last Name",
-              contentPadding:
-                  EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+              contentPadding: Insets.standardPadding,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(30.0),
-                ),
+                borderRadius: Corners.xlBorder,
               ),
             ),
-            style: const TextStyle(fontFamily: "Poppins", fontSize: 15),
+            style: theme.textTheme.subtitle1,
+            // onChanged: (val) {
+            //   setState(() {
+            //     _lastname = val;
+            //   });
+            // },
+            validator: (value) =>
+                value.isEmpty ? 'Last name cannot be blank' : null,
             textInputAction: TextInputAction.next,
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          Spacing.verticalSpace16,
           // InternationalPhoneNumberInput(
           //   inputDecoration: InputDecoration(
           //       labelText: "Number",
@@ -387,137 +264,208 @@ class _MyFormState extends State<MyForm> {
   }
 }
 
-class Profile extends StatefulWidget {
+class ProfileView extends StatefulWidget {
+  const ProfileView({
+    Key key,
+    @required this.firstName,
+    @required this.lastName,
+    @required this.update,
+  }) : super(key: key);
+  final String firstName;
+  final String lastName;
   final ValueChanged<SharedPreferences> update;
-  bool loading;
-  Profile(this.update, this.loading);
 
   @override
-  _ProfileState createState() => _ProfileState();
+  State<ProfileView> createState() => _ProfileViewState();
 }
 
-String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
-TextEditingController controller;
+bool loading = false;
 
-class _ProfileState extends State<Profile> {
-  @override
-  void initState() {
-    controller = TextEditingController();
-    controller.addListener(() {
-      setState(() {
-        telnumber = controller.text;
-      });
-    });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
+class _ProfileViewState extends State<ProfileView> {
+  String fullNameInitials() {
+    return Utilities.getInitials(
+      firstname: widget.firstName,
+      surname: widget.lastName,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    bool mloading = widget.loading;
-    return Container(
-      color: Colors.white,
-      child: Center(
-        child: loading
-            ? CircularProgressIndicator()
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Hero(
-                    tag: "profile",
-                    child: Container(
-                      child: Center(
-                        child: Text(
-                          firstname[0].toUpperCase() +
-                              lastname[0].toUpperCase(),
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 100,
-                              fontFamily: "Poppins_Bold"),
-                        ),
-                      ),
-                      width: large ? 230 : 220,
-                      height: large ? 230 : 220,
-                      decoration: BoxDecoration(
-                        color: myColor,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
+    colorList.shuffle();
+    var myColor = colorList[0];
+    final ThemeData theme = Theme.of(context);
+
+    return Scaffold(
+      body: SafeArea(
+        child: Container(
+          padding: kTabLabelPadding,
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.topLeft,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Icon(
+                    Icons.arrow_back_ios_new_outlined,
+                    color: Colors.black,
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Wrap(
-                    children: [
-                      Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Text("username")),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Text("username")),
-                      Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Text("username")),
-                    ],
-                  ),
-                  Hero(
-                      tag: "text",
-                      child: Text(
-                        capitalize(firstname) + " " + capitalize(lastname),
-                        style: TextStyle(
-                            fontSize: 25,
-                            fontFamily: "Poppins",
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey[800]),
-                      )),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    telnumber,
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontFamily: "Poppins",
-                        fontWeight: FontWeight.w300,
-                        color: Colors.grey[800]),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    gender,
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontFamily: "Poppins",
-                        fontWeight: FontWeight.w300,
-                        color: Colors.grey[800]),
-                  ),
-                ],
+                ),
               ),
+              Flexible(
+                child: Center(
+                  child: loading
+                      ? const CircularProgressIndicator()
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _userAvatar(theme),
+                            Spacing.verticalSpace24,
+                            Hero(
+                              tag: 'text',
+                              child: Text(
+                                '${widget.firstName} ${widget.lastName}',
+                                style: theme.textTheme.headline5,
+                              ),
+                            ),
+                            Spacing.verticalSpace16,
+                            usernameOptions(theme),
+
+                            Spacing.verticalSpace16,
+                            // Text(
+                            //   "telnumber",
+                            //   style: theme.textTheme.headline6.copyWith(
+                            //       fontWeight: FontWeight.w300, color: Colors.grey[800]),
+                            // ),
+                            // Spacing.verticalSpace4,
+                            Text(
+                              gender,
+                              style: theme.textTheme.headline6.copyWith(
+                                  // fontWeight: FontWeight.w300,
+                                  color: Colors.grey[800]),
+                            ),
+                          ],
+                        ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () async {
+                    setState(() {
+                      loading = false;
+                    });
+                    String now =
+                        DateFormat("yyyy-MM-dd").format(DateTime.now());
+                    User myUser = User();
+                    myUser = User(
+                      firstname: widget.firstName,
+                      lastname: widget.lastName,
+                      initials: fullNameInitials(),
+                      gender: gender,
+                      number: '',
+                      created: now,
+                      birthday: "",
+                      image: null,
+                      color: globals.colorListfixed.indexOf(myColor),
+                      level: 1,
+                      xp: 0,
+                      score: 0,
+                      coins: 0,
+                      rank: 0,
+                    );
+
+                    await FirebaseFirestore.instance
+                        .collection("User")
+                        .doc(widget.firstName)
+                        .set(myUser.toJson());
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    await prefs.setString("firstname", widget.firstName);
+                    widget.update(prefs);
+                    Navigator.of(context).push(
+                      CustomPageRoute(
+                        builder: (context) => const MyApp(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'Done',
+                    style: theme.textTheme.subtitle1,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
+
+  Hero _userAvatar(ThemeData theme) {
+    colorList.shuffle();
+    var myColor = colorList[0];
+    return Hero(
+      tag: "profile",
+      child: CircleAvatar(
+        radius: 110,
+        backgroundColor: myColor,
+        child: Center(
+          child: Text(
+            fullNameInitials(),
+            style: theme.textTheme.headline5.copyWith(
+              color: Colors.white,
+              fontSize: 100,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Wrap usernameOptions(ThemeData theme) {
+    return Wrap(
+      alignment: WrapAlignment.spaceAround,
+      children: [
+        RawChip(
+          onPressed: () {},
+          label: Text(
+            "${widget.firstName}${widget.lastName}".toLowerCase(),
+            style: theme.textTheme.subtitle1,
+          ),
+        ),
+        Spacing.horizontalSpace4,
+        RawChip(
+          onPressed: () {},
+          label: Text(
+            "${widget.firstName}_${widget.lastName}".toLowerCase(),
+            style: theme.textTheme.subtitle1,
+          ),
+        ),
+        RawChip(
+          onPressed: () {},
+          label: Text(
+            "${widget.firstName[0]}_${widget.lastName}".toLowerCase(),
+            style: theme.textTheme.subtitle1,
+          ),
+        ),
+      ],
+    );
+  }
 }
+
+class CustomPageRoute extends MaterialPageRoute {
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 500);
+
+  CustomPageRoute({builder}) : super(builder: builder);
+}
+
+String gender = "";
+// PhoneNumber number = PhoneNumber(isoCode: 'GH');
+// String _firstname, _lastname, telnumber;
+// String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
 
 class CustomRadio extends StatefulWidget {
   const CustomRadio({Key key}) : super(key: key);
@@ -537,11 +485,11 @@ class _CustomRadioState extends State<CustomRadio> {
           child: InkWell(
             borderRadius: BorderRadius.circular(50),
             onTap: () {
-              validate();
+              // validate();
               setState(() {
                 FocusScope.of(context).unfocus();
                 gender = "Male";
-                print(gender);
+                debugPrint(gender);
               });
             },
             child: Container(
@@ -552,7 +500,7 @@ class _CustomRadioState extends State<CustomRadio> {
                       fontSize: 18,
                       color: gender == "Male" ? Colors.white : Colors.black),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                 decoration: BoxDecoration(
                     color: Colors.transparent,
                     border: Border.all(
@@ -561,9 +509,7 @@ class _CustomRadioState extends State<CustomRadio> {
                     borderRadius: BorderRadius.circular(50))),
           ),
         ),
-        SizedBox(
-          width: 10,
-        ),
+        Spacing.horizontalSpace8,
         Material(
           borderRadius: BorderRadius.circular(30),
           color: gender == "Female" ? Colors.black : Colors.white,
@@ -571,10 +517,10 @@ class _CustomRadioState extends State<CustomRadio> {
             borderRadius: BorderRadius.circular(30),
             onTap: () {
               setState(() {
-                validate();
+                // validate();
                 FocusScope.of(context).unfocus();
                 gender = "Female";
-                print(gender);
+                debugPrint(gender);
               });
             },
             child: Container(
@@ -585,7 +531,7 @@ class _CustomRadioState extends State<CustomRadio> {
                       fontSize: 18,
                       color: gender == "Female" ? Colors.white : Colors.black),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                 decoration: BoxDecoration(
                     border: Border.all(
                         width: 1,
@@ -598,18 +544,4 @@ class _CustomRadioState extends State<CustomRadio> {
       ],
     );
   }
-
-  void validate() {
-    if (_formKey.currentState.validate()) {
-      setState(() {
-        validated = true;
-      });
-    } else {
-      setState(() {
-        validated = false;
-      });
-    }
-  }
 }
-
-saveForm() async {}

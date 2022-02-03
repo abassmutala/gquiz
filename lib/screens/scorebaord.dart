@@ -1,13 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gquiz/constants/constants.dart';
 import 'package:gquiz/global/global.dart' as globals;
 import 'package:gquiz/models/user.dart';
+import 'package:gquiz/services/database_service.dart';
 
-import 'home.dart';
-
-int postion = 3;
-List<User> top = [];
+int position;
 
 class Scoreboard extends StatefulWidget {
   const Scoreboard({Key key}) : super(key: key);
@@ -17,326 +15,205 @@ class Scoreboard extends StatefulWidget {
 }
 
 class _ScoreboardState extends State<Scoreboard> {
+  final DatabaseService _databaseService = DatabaseService();
   @override
   void initState() {
-    postion = 3;
+    position = 3;
     super.initState();
-  }
-
-  Future getUsers() async {
-    var firestore = FirebaseFirestore.instance;
-    int count = 0;
-    QuerySnapshot users = await firestore
-        .collection("User")
-        .orderBy("score", descending: true)
-        .get();
-    print(users.docs.length.toString());
-    return users.docs;
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.all(20),
-        decoration: BoxDecoration(color: const Color(0xff5DE2A2)),
-        child: Column(
-          children: [
-            Container(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                child: Stack(
-                  children: [
-                    Column(
-                      children: [
-                        SizedBox(
-                          height: 80,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Column(
-                              children: [
-                                Text("2",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontFamily: "Poppins_Bold",
-                                        fontSize: 25)),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                SvgPicture.asset("assets/rank_normal.svg"),
-                                SizedBox(
-                                  height: 8,
-                                ),
-                                Container(
-                                  width: small ? 115 : 130,
-                                  height: small ? 115 : 130,
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey[100],
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: Colors.black38
-                                                .withOpacity(0.09),
-                                            spreadRadius: 1,
-                                            blurRadius: 10),
-                                      ]),
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Text("@user2",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontFamily: "Poppins_Bold",
-                                        fontSize: small ? 15 : 18)),
-                                Text("7501",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontFamily: "Poppins_Bold",
-                                        fontSize: small ? 23 : 25)),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        SizedBox(
-                          height: 80,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Column(
-                              children: [
-                                Text("3",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontFamily: "Poppins_Bold",
-                                        fontSize: small ? 23 : 25)),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                SvgPicture.asset("assets/rank_down.svg"),
-                                SizedBox(
-                                  height: 8,
-                                ),
-                                Container(
-                                  width: small ? 115 : 130,
-                                  height: small ? 115 : 130,
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey[100],
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: Colors.black38
-                                                .withOpacity(0.09),
-                                            spreadRadius: 1,
-                                            blurRadius: 10),
-                                      ]),
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Text("@user3",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontFamily: "Poppins_Bold",
-                                        fontSize: small ? 15 : 18)),
-                                Text("7101",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontFamily: "Poppins_Bold",
-                                        fontSize: small ? 23 : 25)),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(
-                          children: [
-                            Text("1",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: "Poppins_Bold",
-                                    fontSize: small ? 23 : 25)),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            SvgPicture.asset("assets/crown.svg"),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Container(
-                              width: small ? 140 : 160,
-                              height: small ? 140 : 160,
-                              decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: Colors.black38.withOpacity(0.09),
-                                        spreadRadius: 1,
-                                        blurRadius: 10),
-                                  ]),
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Text("@user1",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontFamily: "Poppins_Bold",
-                                    fontSize: small ? 15 : 18)),
-                            Text("8701",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: "Poppins_Bold",
-                                    fontSize: small ? 23 : 25)),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                )),
-            Container(
-              child: FutureBuilder(
-                  future: getUsers(),
-                  builder: (_, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: Text("Loading"),
-                      );
-                    } else {
-                      return ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: snapshot.data.length,
-                          itemBuilder: (_, index) {
-                            User myNew = User();
-                            myNew = User.fromJson(snapshot.data[index].data());
-                            return UserItem(
-                              initials: myNew.initials,
-                              name: myNew.firstname,
-                              score: myNew.score,
-                              color: globals.colorList[myNew.color],
-                              rank: myNew.level.toString(),
-                            );
-                          });
-                    }
-                  }),
-            )
-          ],
+    final ThemeData theme = Theme.of(context);
+    return Scaffold(
+      backgroundColor: theme.colorScheme.secondary,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: const Color(0xff5DE2A2),
+        title: Text(
+          "Leaderboard",
+          style: theme.textTheme.headline5.copyWith(
+            color: Colors.white,
+            fontSize: 25,
+          ),
         ),
       ),
+      body: FutureBuilder(
+          future: _databaseService.getUsers(),
+          builder: (_, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator.adaptive());
+            }
+            return SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Stack(
+                        children: [
+                          Column(
+                            children: [
+                              Spacing.verticalSpace(80),
+                              topPlayersWidget(theme,
+                                  user: User.fromJson(
+                                    snapshot.data[1].data(),
+                                  ),
+                                  rank: '2',
+                                  icon: 'assets/rank_normal.svg',
+                                  radius: 65,
+                                  mainAxisAlignment: MainAxisAlignment.start),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Spacing.verticalSpace(80),
+                              topPlayersWidget(theme,
+                                  user: User.fromJson(
+                                    snapshot.data[2].data(),
+                                  ),
+                                  rank: '3',
+                                  icon: 'assets/rank_down.svg',
+                                  radius: 65,
+                                  mainAxisAlignment: MainAxisAlignment.end),
+                            ],
+                          ),
+                          topPlayersWidget(theme,
+                              user: User.fromJson(
+                                snapshot.data[0].data(),
+                              ),
+                              rank: '1',
+                              icon: 'assets/crown.svg',
+                              radius: 80,
+                              mainAxisAlignment: MainAxisAlignment.center),
+                        ],
+                      ),
+                    ),
+                    Spacing.verticalSpace24,
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: snapshot.data.length - 3,
+                      itemBuilder: (context, index) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: UserItem(
+                          user: User.fromJson(
+                            snapshot.data[index + 3].data(),
+                          ),
+                          index: '${index + 4}',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
     );
   }
 }
 
-class UserItem extends StatefulWidget {
-  final String name, rank;
-  final String initials;
-  final int score;
-  final Color color;
-
-  UserItem({this.initials, this.name, this.score, this.color, this.rank});
-
-  @override
-  _UserItemState createState() => _UserItemState();
+Widget topPlayersWidget(
+  ThemeData theme, {
+  @required User user,
+  @required String rank,
+  @required String icon,
+  @required double radius,
+  @required MainAxisAlignment mainAxisAlignment,
+}) {
+  return Row(
+    mainAxisAlignment: mainAxisAlignment,
+    children: [
+      Column(
+        children: [
+          Text(
+            rank,
+            style: theme.textTheme.headline5.copyWith(color: Colors.white),
+          ),
+          Spacing.verticalSpace4,
+          SvgPicture.asset(icon),
+          Spacing.verticalSpace8,
+          CircleAvatar(
+            backgroundColor: globals.colorList[user.color],
+            radius: radius,
+            child: Text(
+              user.initials,
+              style: theme.textTheme.headline5
+                  .copyWith(fontSize: 64, color: Colors.white),
+            ),
+          ),
+          Spacing.verticalSpace4,
+          Text(
+            '@${user.firstname}',
+            style:
+                theme.textTheme.subtitle1.copyWith(fontWeight: FontWeight.w900),
+          ),
+          Spacing.verticalSpace8,
+          Text(
+            user.score.toString(),
+            style: theme.textTheme.headline5.copyWith(color: Colors.white),
+          ),
+        ],
+      ),
+    ],
+  );
 }
 
-class _UserItemState extends State<UserItem> {
+class UserItem extends StatelessWidget {
+  final User user;
+  final String index;
+  const UserItem({Key key, @required this.user, @required this.index})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    postion++;
-    return Container(
-        margin: EdgeInsets.symmetric(vertical: small ? 8 : 10),
-        child: Row(
-          children: [
-            Container(
-              width: 30,
-              child: Column(
-                children: [
-                  SvgPicture.asset("assets/rank_" + widget.rank + ".svg"),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Text(postion.toString(),
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: "Poppins_Bold",
-                          fontSize: small ? 23 : 25)),
-                ],
+    final ThemeData theme = Theme.of(context);
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: Column(
+            children: [
+              SvgPicture.asset('assets/rank_${user.rank.toString()}.svg'),
+              Spacing.verticalSpace4,
+              Text(
+                index,
+                maxLines: 1,
+                style: theme.textTheme.headline5.copyWith(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+        Flexible(
+          child: ListTile(
+            contentPadding: const EdgeInsets.only(left: 0.0, right: 16.0),
+            shape: const StadiumBorder(),
+            tileColor: Colors.white,
+            leading: CircleAvatar(
+              radius: 28,
+              backgroundColor: globals.colorList[user.color],
+              child: Center(
+                child: Text(
+                  user.initials,
+                  style:
+                      theme.textTheme.headline5.copyWith(color: Colors.white),
+                ),
               ),
             ),
-            SizedBox(
-              width: small ? 10 : 20,
+            title: Text(
+              '@${user.firstname}',
+              overflow: TextOverflow.ellipsis,
             ),
-            Expanded(
-                child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(50)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    width: small ? 50 : 60,
-                    height: small ? 50 : 60,
-                    decoration: BoxDecoration(
-                      color: widget.color,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(widget.initials,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: "Poppins_Bold",
-                              fontSize: small ? 28 : 30)),
-                    ),
-                  ),
-                  Container(
-                      width: 90,
-                      child: Row(
-                        children: [
-                          Text("@" + widget.name,
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: "Poppins",
-                                  fontSize: small ? 15 : 18,
-                                  fontWeight: FontWeight.bold)),
-                        ],
-                      )),
-                  Row(
-                    children: [
-                      Center(
-                        child: Container(
-                          width: 60,
-                          child: Row(
-                            children: [
-                              Text(widget.score.toString(),
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontFamily: "Poppins_Bold",
-                                      fontSize: small ? 17 : 20)),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ))
-          ],
-        ));
+            trailing: Text(
+              user.score.toString(),
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.headline6
+                  .copyWith(fontWeight: FontWeight.w800),
+            ),
+          ),
+        )
+      ],
+    );
   }
 }
