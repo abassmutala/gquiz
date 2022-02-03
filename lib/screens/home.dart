@@ -20,6 +20,7 @@ import 'package:gquiz/dialogue/next.dart';
 import 'package:gquiz/global/global.dart' as globals;
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tutorial/tutorial.dart';
 
 import '../adhelper.dart';
 
@@ -42,6 +43,13 @@ var colorList = [
   Colors.grey[900],
   Colors.indigo[900],
 ];
+final _profile = GlobalKey();
+final _firstitem = GlobalKey();
+final _seconditem = GlobalKey();
+final _thirdItem = GlobalKey();
+final _fourthitem = GlobalKey();
+List<TutorialItens> itens = [];
+List<TutorialItens> itens2 = [];
 double mypadding = 20;
 double text, texBig = 40, textNormal = 20;
 bool large = false, normal = false, small = false;
@@ -76,8 +84,108 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     }
   }
 
+  Widget custnext() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 10),
+      width: 150,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black38.withOpacity(0.1),
+              spreadRadius: 5,
+              blurRadius: 15),
+        ],
+        borderRadius: BorderRadius.circular(40),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "Next",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 20, fontFamily: "Poppins_bold"),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void initState() {
+    itens.clear();
+    itens.addAll({
+      TutorialItens(
+          globalKey: _firstitem,
+          touchScreen: true,
+          top: 200,
+          left: 50,
+          children: [
+            Text(
+              "Select A Category to start playing",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            SizedBox(
+              height: 500,
+            )
+          ],
+          widgetNext: custnext(),
+          shapeFocus: ShapeFocus.oval),
+    });
+    itens2.addAll({
+      TutorialItens(
+          globalKey: _seconditem,
+          touchScreen: true,
+          top: 200,
+          left: 50,
+          children: [
+            Text(
+              "This shows the total questions you've answers in the category",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            SizedBox(
+              height: 500,
+            )
+          ],
+          widgetNext: custnext(),
+          shapeFocus: ShapeFocus.oval),
+      TutorialItens(
+          globalKey: _thirdItem,
+          touchScreen: true,
+          top: 200,
+          left: 50,
+          children: [
+            Text(
+              "You will be rewarded after passing each level",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            SizedBox(
+              height: 500,
+            )
+          ],
+          widgetNext: custnext(),
+          shapeFocus: ShapeFocus.oval),
+      TutorialItens(
+          globalKey: _fourthitem,
+          touchScreen: true,
+          top: 200,
+          left: 50,
+          children: [
+            Text(
+              "Click next to start playing",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            SizedBox(
+              height: 500,
+            )
+          ],
+          widgetNext: custnext(),
+          shapeFocus: ShapeFocus.oval)
+    });
+
+    Future.delayed(Duration(milliseconds: 2000), () {
+      Tutorial.showTutorial(context, itens);
+    });
     _controller = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
@@ -151,6 +259,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       mypadding = 40;
       large = true;
     }
+
     return SingleChildScrollView(
       child: Stack(
         children: [
@@ -292,15 +401,18 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 ),
                 Container(
                     width: MediaQuery.of(context).size.width,
-                    child: Text(
-                      "Good " + greeting(),
-                      style: TextStyle(
-                          fontSize: large
-                              ? texBig
-                              : normal
-                                  ? 28
-                                  : 25,
-                          fontFamily: "Poppins_Bold"),
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: Text(
+                        "Good " + greeting(),
+                        style: TextStyle(
+                            fontSize: large
+                                ? texBig
+                                : normal
+                                    ? 28
+                                    : 25,
+                            fontFamily: "Poppins_Bold"),
+                      ),
                     )),
                 SizedBox(
                   height: normal
@@ -377,13 +489,16 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        CategoryCard(
-                            "Science",
-                            "science",
-                            const Color(0xff5DE2A2),
-                            const Color(0xffE5FFF2),
-                            false,
-                            _scale),
+                        Container(
+                          key: _firstitem,
+                          child: CategoryCard(
+                              "Science",
+                              "science",
+                              const Color(0xff5DE2A2),
+                              const Color(0xffE5FFF2),
+                              false,
+                              _scale),
+                        ),
                         SizedBox(
                           width: 20,
                         ),
@@ -503,6 +618,9 @@ class CategoryCard extends StatelessWidget {
             color: Colors.transparent,
             child: InkWell(
               onTap: () {
+                Future.delayed(Duration(milliseconds: 2000), () {
+                  Tutorial.showTutorial(context, itens2);
+                });
                 globals.category = text;
                 soundService.Click1();
                 soundService.dialog();
@@ -701,6 +819,7 @@ class _AddTodoCardState extends State<AddTodoCard> {
                                           padding: EdgeInsets.symmetric(
                                               vertical: 10),
                                           child: Container(
+                                            key: _seconditem,
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 8, vertical: 25),
                                             decoration: BoxDecoration(
@@ -747,6 +866,7 @@ class _AddTodoCardState extends State<AddTodoCard> {
                                           padding: EdgeInsets.symmetric(
                                               vertical: 10),
                                           child: Container(
+                                            key: _thirdItem,
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 8, vertical: 25),
                                             decoration: BoxDecoration(
@@ -843,6 +963,7 @@ class _AddTodoCardState extends State<AddTodoCard> {
                                                       Color>(Colors.white),
                                             ))
                                         : GestureDetector(
+                                            key: _fourthitem,
                                             onTap: () {
                                               Navigator.of(context).pop();
                                               Navigator.of(context).push(

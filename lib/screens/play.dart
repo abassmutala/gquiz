@@ -16,6 +16,7 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'dart:math' as math;
 
 import 'package:simple_animations/simple_animations.dart';
+import 'package:tutorial/tutorial.dart';
 
 import '../adhelper.dart';
 import 'home.dart';
@@ -62,6 +63,7 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
       point = false,
       scale = false,
       normal = false;
+  bool firsttime = true;
   double score = 0, newscore = 0;
   bool confetti = true;
   bool back = false;
@@ -82,7 +84,17 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
   int currentScore = 0, addpoint = 0;
 
   bool isLoading;
-
+  final _topic = GlobalKey();
+  final _profile = GlobalKey();
+  final _counterkey = GlobalKey();
+  final _answerskey = GlobalKey();
+  final _questionkey = GlobalKey();
+  final _answerakey = GlobalKey();
+  final _answerbkey = GlobalKey();
+  final _answerckey = GlobalKey();
+  final _answerdkey = GlobalKey();
+  List<TutorialItens> itens = [];
+  List<TutorialItens> itens2 = [];
   var colorList = [
     Colors.red,
     Colors.pink,
@@ -227,10 +239,11 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
       anstreak = 0;
     }
 
-    //animate();
+    // animate();
     var func = [];
     if (answer == "A") {
       answerAup();
+
       func = [answerBout(), answerCout(), answerDout()];
     }
     if (answer == "B") {
@@ -263,7 +276,10 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
         finishDialog(context);
         return;
       }
-      animate();
+      if (firsttime) {
+      } else {
+        animate();
+      }
     });
   }
 
@@ -720,8 +736,101 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.ease));
   }
 
+  Widget custnext() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 10),
+      width: 150,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black38.withOpacity(0.1),
+              spreadRadius: 5,
+              blurRadius: 15),
+        ],
+        borderRadius: BorderRadius.circular(40),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "Next",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 20, fontFamily: "Poppins_bold"),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void initState() {
+    itens.addAll({
+      TutorialItens(
+          globalKey: _topic,
+          touchScreen: true,
+          top: 300,
+          left: 50,
+          children: [
+            Text(
+              "Check for topics on each question before you answer",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            SizedBox(
+              height: 500,
+            )
+          ],
+          widgetNext: custnext(),
+          shapeFocus: ShapeFocus.oval),
+      TutorialItens(
+          globalKey: _profile,
+          touchScreen: true,
+          top: 100,
+          left: 50,
+          children: [
+            Text(
+              "Game progress will be displayed here",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            SizedBox(
+              height: 500,
+            )
+          ],
+          widgetNext: custnext(),
+          shapeFocus: ShapeFocus.oval),
+      TutorialItens(
+          globalKey: _questionkey,
+          touchScreen: true,
+          top: 100,
+          left: 50,
+          children: [
+            Text(
+              "Current question will be displayed here",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            SizedBox(
+              height: 600,
+            )
+          ],
+          widgetNext: custnext(),
+          shapeFocus: ShapeFocus.oval),
+      TutorialItens(
+          globalKey: _counterkey,
+          touchScreen: true,
+          top: 100,
+          left: 50,
+          children: [
+            Text(
+              "Each question is timed, try not to run out of time",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            SizedBox(
+              height: 500,
+            )
+          ],
+          widgetNext: custnext(),
+          shapeFocus: ShapeFocus.oval)
+    });
     loadCategory();
 
     questionIn();
@@ -790,7 +899,14 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
         curve: Interval(0.2, 1.0, curve: Curves.ease)));
     Future.delayed(Duration(milliseconds: 2000), () {
       setState(() {
-        animateIn();
+        if (firsttime) {
+          Future.delayed(Duration(milliseconds: 2000), () {
+            Tutorial.showTutorial(context, itens);
+          });
+        } else {
+          animateIn();
+        }
+
         load = true;
         _controllernew = AnimationController(
           duration: const Duration(milliseconds: 500),
@@ -893,11 +1009,14 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
                                     SizedBox(
                                       height: 5,
                                     ),
-                                    Text(topic,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontFamily: "Poppins_Bold",
-                                            fontSize: small ? 18 : 20)),
+                                    Container(
+                                      key: _topic,
+                                      child: Text(topic,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: "Poppins_Bold",
+                                              fontSize: small ? 18 : 20)),
+                                    ),
                                   ],
                                 )
                               ],
@@ -980,13 +1099,16 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Text(
-                                          "$current_question/" +
-                                              widget.ttq.toString(),
-                                          style: TextStyle(
-                                              fontSize: large ? 20 : 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white),
+                                        Container(
+                                          key: _profile,
+                                          child: Text(
+                                            "$current_question/" +
+                                                widget.ttq.toString(),
+                                            style: TextStyle(
+                                                fontSize: large ? 20 : 18,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white),
+                                          ),
                                         )
                                       ],
                                     ),
@@ -1031,6 +1153,7 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
                           ),
                         ),
                         Container(
+                          key: _counterkey,
                           child: CircularPercentIndicator(
                             percent: percent,
                             radius: large ? 60 : 50,
@@ -1066,15 +1189,24 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
                                   ),
                                   FadeTransition(
                                     opacity: _controller,
-                                    child: Text(
-                                      question,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: large ? 23 : 20,
-                                          fontFamily: "Poppins_Bold",
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.grey[800],
-                                          height: 1.3),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          question,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              fontSize: large ? 23 : 20,
+                                              fontFamily: "Poppins_Bold",
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.grey[800],
+                                              height: 1.3),
+                                        ),
+                                        Container(
+                                          key: _questionkey,
+                                          width: 200,
+                                          height: 2,
+                                        )
+                                      ],
                                     ),
                                   ),
                                 ],
@@ -1149,6 +1281,7 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
               : FadeTransition(
                   opacity: _controllernew,
                   child: Container(
+                    key: _answerskey,
                     height: double.infinity,
                     child: Center(
                         child: Column(
@@ -1170,8 +1303,17 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
                                       maintainAnimation: true,
                                       maintainState: true,
                                       visible: visibleA,
-                                      child: answerButton(
-                                          answerA, context, aCorrect))),
+                                      child: Column(
+                                        children: [
+                                          answerButton(
+                                              answerA, context, aCorrect),
+                                          Container(
+                                            key: _answerakey,
+                                            width: 100,
+                                            height: 1,
+                                          ),
+                                        ],
+                                      ))),
                             )),
                         SizedBox(
                           height: 15,
@@ -1189,8 +1331,17 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
                                       maintainAnimation: true,
                                       maintainState: true,
                                       visible: visibleB,
-                                      child: answerButton(
-                                          answerB, context, bCorrect))),
+                                      child: Column(
+                                        children: [
+                                          answerButton(
+                                              answerB, context, bCorrect),
+                                          Container(
+                                            key: _answerbkey,
+                                            width: 100,
+                                            height: 1,
+                                          ),
+                                        ],
+                                      ))),
                             )),
                         SizedBox(
                           height: 15,
@@ -1208,8 +1359,17 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
                                       maintainAnimation: true,
                                       maintainState: true,
                                       visible: visibleC,
-                                      child: answerButton(
-                                          answerC, context, cCorrect))),
+                                      child: Column(
+                                        children: [
+                                          answerButton(
+                                              answerC, context, cCorrect),
+                                          Container(
+                                            key: _answerckey,
+                                            width: 100,
+                                            height: 1,
+                                          ),
+                                        ],
+                                      ))),
                             )),
                         SizedBox(
                           height: 15,
@@ -1227,8 +1387,17 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
                                       maintainAnimation: true,
                                       maintainState: true,
                                       visible: visibleD,
-                                      child: answerButton(
-                                          answerD, context, dCorrect))),
+                                      child: Column(
+                                        children: [
+                                          answerButton(
+                                              answerD, context, dCorrect),
+                                          Container(
+                                            key: _answerdkey,
+                                            width: 100,
+                                            height: 1,
+                                          ),
+                                        ],
+                                      ))),
                             )),
                       ],
                     )),
