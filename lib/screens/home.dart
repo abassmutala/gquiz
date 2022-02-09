@@ -5,6 +5,7 @@ import 'package:countup/countup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gquiz/constants/constants.dart';
 import 'package:gquiz/dialogue/hero_dialogue.dart';
 import 'package:gquiz/global/widgets.dart';
 import 'package:gquiz/main.dart';
@@ -35,14 +36,7 @@ class Home extends StatefulWidget {
 }
 
 bool test = false;
-var colorList = [
-  Colors.red,
-  Colors.pink,
-  Colors.blue,
-  Colors.deepPurple,
-  Colors.grey[900],
-  Colors.indigo[900],
-];
+
 final _profile = GlobalKey();
 final _firstitem = GlobalKey();
 final _seconditem = GlobalKey();
@@ -234,7 +228,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   void dispose() {
     if (opencard) {
       _AddTodoCardState().dispose();
-      controller.dispose();
+      // controller.dispose();
       _controller2.dispose();
       opencard = false;
     }
@@ -243,8 +237,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     double screensize = MediaQuery.of(context).size.width;
-    print("size" + MediaQuery.of(context).size.width.toString());
     globals.qoutes.shuffle();
     qoute = globals.qoutes[1].toString();
     if (screensize < 380) {
@@ -291,15 +285,15 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                           child: Center(
                               child: Text(
                             globals.myUser.initials.toUpperCase(),
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: "Poppins_Bold",
-                                fontSize: 20),
+                            style: theme.textTheme.headline5
+                                .copyWith(color: Colors.white, fontSize: 20),
                           )),
                           width: large ? 60 : 50,
                           height: large ? 60 : 50,
                           decoration: BoxDecoration(
-                            color: colorList[globals.myUser.color],
+                            color: Color(
+                              int.parse(globals.myUser.color),
+                            ),
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
@@ -341,24 +335,19 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                 child: Column(
                                   children: [
                                     Text("Score",
-                                        style: TextStyle(
-                                            fontSize: large ? 13 : 12)),
+                                        style: theme.textTheme.subtitle1),
                                     Countup(
-                                        duration: Duration(milliseconds: 500),
-                                        begin: 0,
-                                        end: globals.myUser.score.toDouble(),
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontFamily: "Poppins_Bold",
-                                            color: Colors.grey[800]))
+                                      duration: TimeLengths.halfSec,
+                                      begin: 0,
+                                      end: globals.myUser.score.toDouble(),
+                                      style: theme.textTheme.subtitle1,
+                                    )
                                   ],
                                 ),
                               )
                             ],
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
+                          Spacing.horizontalSpace12,
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
@@ -372,16 +361,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                 child: Column(
                                   children: [
                                     Text("Coins",
-                                        style: TextStyle(
-                                            fontSize: large ? 13 : 12)),
+                                        style: theme.textTheme.subtitle1),
                                     Countup(
-                                        duration: Duration(milliseconds: 500),
-                                        begin: 0,
-                                        end: globals.myUser.coins.toDouble(),
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontFamily: "Poppins_Bold",
-                                            color: Colors.grey[800]))
+                                      duration: TimeLengths.halfSec,
+                                      begin: 0,
+                                      end: globals.myUser.coins.toDouble(),
+                                      style: theme.textTheme.subtitle1,
+                                    )
                                   ],
                                 ),
                               )
@@ -392,54 +378,33 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     ),
                   ],
                 ),
+                Spacing.verticalSpace4,
                 SizedBox(
-                  height: normal
-                      ? 10
-                      : large
-                          ? 15
-                          : 2,
-                ),
-                Container(
-                    width: MediaQuery.of(context).size.width,
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                        "Good " + greeting(),
-                        style: TextStyle(
-                            fontSize: large
-                                ? texBig
-                                : normal
-                                    ? 28
-                                    : 25,
-                            fontFamily: "Poppins_Bold"),
-                      ),
-                    )),
-                SizedBox(
-                  height: normal
-                      ? 5
-                      : large
-                          ? 15
-                          : 2,
-                ),
-                Container(
-                    width: MediaQuery.of(context).size.width / 1.5,
-                    height: 70,
+                  width: MediaQuery.of(context).size.width,
+                  child: GestureDetector(
+                    onTap: () {},
                     child: Text(
-                      "'$qoute'",
-                      textAlign: TextAlign.start,
-                      style: TextStyle(fontSize: small ? 15 : 20),
-                    )),
+                      'Good  ${greeting()}',
+                      style: theme.textTheme.headline5,
+                    ),
+                  ),
+                ),
+                Spacing.verticalSpace12,
                 SizedBox(
-                  height: large
-                      ? 20
-                      : normal
-                          ? 18
-                          : 10,
-                )
+                  width: MediaQuery.of(context).size.width / 1.5,
+                  height: 70,
+                  child: Text(
+                    '"$qoute"',
+                    textAlign: TextAlign.start,
+                    maxLines: 3,
+                    style: theme.textTheme.subtitle1,
+                  ),
+                ),
+                Spacing.verticalSpace12,
               ],
             ),
           ),
-          Container(
+          SizedBox(
             width: MediaQuery.of(context).size.width,
             height: large
                 ? 620
@@ -463,16 +428,14 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       borderRadius: BorderRadius.circular(30)),
                   child: Text(
                     "Choose a Subject",
-                    style: TextStyle(
-                        fontSize: large ? 25 : textNormal,
-                        fontFamily: "Poppins_Bold"),
+                    style: theme.textTheme.headline5,
                     textAlign: TextAlign.center,
                   ),
                 ),
               ),
             ),
           ),
-          Container(
+          SizedBox(
             width: MediaQuery.of(context).size.width,
             child: Center(
               child: Column(
@@ -492,18 +455,24 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                         Container(
                           key: _firstitem,
                           child: CategoryCard(
-                              "Science",
-                              "science",
-                              const Color(0xff5DE2A2),
-                              const Color(0xffE5FFF2),
-                              false,
-                              _scale),
+                              text: 'Science',
+                              icon: "science",
+                              bColor: const Color(0xff5DE2A2),
+                              mColor: const Color(0xffE5FFF2),
+                              box: false,
+                              animation: _scale),
                         ),
                         SizedBox(
                           width: 20,
                         ),
-                        CategoryCard("Maths", "maths", const Color(0xffA7E3E8),
-                            const Color(0xff4ABBC4), false, _scale1),
+                        CategoryCard(
+                          text: 'Maths',
+                          icon: "maths",
+                          bColor: const Color(0xffA7E3E8),
+                          mColor: const Color(0xff4ABBC4),
+                          box: false,
+                          animation: _scale1,
+                        ),
                       ],
                     ),
                   ),
@@ -516,57 +485,45 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         CategoryCard(
-                            "English",
-                            "english",
-                            const Color(0xffFED330),
-                            const Color(0xffFFEEAF),
-                            false,
-                            _scale2),
+                            text: 'English',
+                            icon: "english",
+                            bColor: const Color(0xffFED330),
+                            mColor: const Color(0xffFFEEAF),
+                            box: false,
+                            animation: _scale2),
                         SizedBox(
                           width: 20,
                         ),
                         CategoryCard(
-                            "Social Studies",
-                            "social",
-                            const Color(0xff4E7FFF),
-                            const Color(0xffC4D5FF),
-                            true,
-                            _scale3)
+                            text: 'Social Studies',
+                            icon: "social",
+                            bColor: const Color(0xff4E7FFF),
+                            mColor: const Color(0xffC4D5FF),
+                            box: true,
+                            animation: _scale3)
                       ],
                     ),
                   ),
                   SizedBox(
                     height: large ? 18 : 13,
                   ),
-                  SlideTransition(
-                    position: _positionAnimation,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      width: MediaQuery.of(context).size.width - 100,
-                      decoration: BoxDecoration(
-                        color: const Color(0xffFED330),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black38.withOpacity(0.1),
-                              spreadRadius: 5,
-                              blurRadius: 15),
-                        ],
-                        borderRadius: BorderRadius.circular(40),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset("assets/random.svg"),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            "Random",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 20, fontFamily: "Poppins_bold"),
-                          ),
-                        ],
+                  Container(
+                    width: MediaQuery.of(context).size.width - 100,
+                    height: 40,
+                    margin: const EdgeInsets.symmetric(vertical: 12),
+                    child: SlideTransition(
+                      position: _positionAnimation,
+                      child: ElevatedButton.icon(
+                        onPressed: () {},
+                        icon: SvgPicture.asset("assets/random.svg"),
+                        label: Text(
+                          'Random',
+                          style: theme.textTheme.button,
+                        ),
+                        style: ButtonStyle(
+                          shape:
+                              MaterialStateProperty.all(const StadiumBorder()),
+                        ),
                       ),
                     ),
                   )
@@ -588,11 +545,19 @@ class CategoryCard extends StatelessWidget {
   final bool box;
   final Animation<double> animation;
 
-  CategoryCard(
-      this.text, this.icon, this.bColor, this.mColor, this.box, this.animation);
+  const CategoryCard(
+      {Key key,
+      this.text,
+      this.icon,
+      this.bColor,
+      this.mColor,
+      this.box,
+      this.animation})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     return Hero(
       tag: "image$text",
       child: ScaleTransition(
@@ -618,7 +583,7 @@ class CategoryCard extends StatelessWidget {
             color: Colors.transparent,
             child: InkWell(
               onTap: () {
-                Future.delayed(Duration(milliseconds: 2000), () {
+                Future.delayed(TimeLengths.fullSec * 2, () {
                   Tutorial.showTutorial(context, itens2);
                 });
                 globals.category = text;
@@ -663,10 +628,10 @@ class CategoryCard extends StatelessWidget {
                         width: 160,
                         child: Text(
                           text,
-                          style: TextStyle(
-                              color: mColor,
-                              fontSize: small ? 19 : 29,
-                              fontFamily: "Poppins_Bold"),
+                          style: theme.textTheme.headline5.copyWith(
+                            color: mColor,
+                            fontSize: 29,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                       ),

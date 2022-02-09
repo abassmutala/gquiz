@@ -7,8 +7,8 @@ class User {
       created,
       birthday,
       image,
-      username;
-  int color, level, xp, score, coins, rank;
+      username,color;
+  int level, xp, score, coins, rank;
 
   User(
       {this.firstname,

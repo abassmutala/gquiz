@@ -13,6 +13,7 @@ import 'package:gquiz/models/user.dart';
 import 'package:gquiz/models/userplay.dart';
 import 'package:gquiz/screens/play_vs.dart';
 import 'package:gquiz/services/connectService.dart';
+import 'package:gquiz/utils/utilities.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../adhelper.dart';
@@ -329,7 +330,7 @@ class _BattleState extends State<Battle> with TickerProviderStateMixin {
           created: "3",
           birthday: "3",
           image: "",
-          color: globals.colorListnum[0],
+          color: Utilities.generateRandomColor(),
           level: levelList[nameList.indexOf(element)],
           xp: 30,
           score: 10,
@@ -961,8 +962,7 @@ class _BattleState extends State<Battle> with TickerProviderStateMixin {
                                     width: 100,
                                     height: 100,
                                     decoration: BoxDecoration(
-                                        color: globals
-                                            .colorList[globals.myUser.color],
+                                        color: Color(int.parse(globals.myUser.color),),
                                         shape: BoxShape.circle),
                                     child: (Center(
                                         child: Text(
@@ -1001,9 +1001,7 @@ class _BattleState extends State<Battle> with TickerProviderStateMixin {
                                                 globals.myUser.level.toString(),
                                                 style: TextStyle(
                                                     fontSize: 12,
-                                                    color: globals
-                                                            .colorListfixed[
-                                                        globals.myUser.color],
+                                                    color: Color(int.parse(globals.myUser.color),),
                                                     fontFamily: "Poppins_Bold"),
                                               )
                                             ],
@@ -1073,8 +1071,7 @@ class _BattleState extends State<Battle> with TickerProviderStateMixin {
                                           width: 100,
                                           height: 100,
                                           decoration: BoxDecoration(
-                                              color: globals
-                                                  .colorList[myopponent.color],
+                                              color: Color(int.parse(myopponent.color),),
                                               shape: BoxShape.circle),
                                           child: (Center(
                                               child: Text(
@@ -1116,9 +1113,7 @@ class _BattleState extends State<Battle> with TickerProviderStateMixin {
                                                           .toString(),
                                                       style: TextStyle(
                                                           fontSize: 12,
-                                                          color: globals
-                                                                  .colorListfixed[
-                                                              myopponent.color],
+                                                          color: Color(int.parse(myopponent.color),),
                                                           fontFamily:
                                                               "Poppins_Bold"),
                                                     )

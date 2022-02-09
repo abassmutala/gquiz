@@ -798,7 +798,7 @@ class _PlayVsState extends State<PlayVs> with TickerProviderStateMixin {
                                 width: 55,
                                 height: 55,
                                 decoration: BoxDecoration(
-                                    color: colorList[globals.myUser.color],
+                                    color: Color(int.parse(globals.myUser.color),),
                                     shape: BoxShape.circle),
                                 child: Center(
                                     child: Text(
@@ -995,7 +995,7 @@ class _PlayVsState extends State<PlayVs> with TickerProviderStateMixin {
                                     width: 80,
                                     height: 80,
                                     decoration: BoxDecoration(
-                                        color: colorList[globals.myUser.color],
+                                        color: Color(int.parse(globals.myUser.color),),
                                         shape: BoxShape.circle),
                                     child: Center(
                                         child: Text(
@@ -1056,8 +1056,7 @@ class _PlayVsState extends State<PlayVs> with TickerProviderStateMixin {
                                           width: 80,
                                           height: 80,
                                           decoration: BoxDecoration(
-                                              color: colorList[globals
-                                                  .opponentProfile.color],
+                                              color: Color(int.parse(globals.opponentProfile.color),),
                                               shape: BoxShape.circle),
                                           child: Center(
                                               child: Text(
@@ -1341,7 +1340,7 @@ class _PlayVsState extends State<PlayVs> with TickerProviderStateMixin {
                                       width: large ? 55 : 45,
                                       height: large ? 55 : 45,
                                       decoration: BoxDecoration(
-                                        color: colorList[globals.myUser.color],
+                                        color: Color(int.parse(globals.myUser.color),),
                                         shape: BoxShape.circle,
                                       ),
                                       child: Center(
@@ -1432,8 +1431,7 @@ class _PlayVsState extends State<PlayVs> with TickerProviderStateMixin {
                                       width: large ? 55 : 45,
                                       height: large ? 55 : 45,
                                       decoration: BoxDecoration(
-                                        color: colorList[
-                                            globals.opponentProfile.color],
+                                        color: Color(int.parse(globals.opponentProfile.color),),
                                         shape: BoxShape.circle,
                                       ),
                                       child: Center(

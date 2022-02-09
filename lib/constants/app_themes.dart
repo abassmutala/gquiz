@@ -10,11 +10,19 @@ ThemeData _gQuizLightTheme() {
     textTheme: _gQuizLightTextTheme(base.textTheme),
     // scaffoldBackgroundColor: kGQuizScaffoldBackground,
     appBarTheme: base.appBarTheme.copyWith(
-      // color: kGQuizWhiteBackground,
-      // iconTheme: const IconThemeData(color: kGQuizOnLightSurface),
-      // foregroundColor: kGQuizOnLightSurface,
-    ),
-    textSelectionTheme: TextSelectionThemeData(selectionColor: base.colorScheme.primary.withOpacity(0.25)),
+        titleTextStyle: base.textTheme.headline5.copyWith(
+      fontFamily: 'Gilroy',
+      fontSize: 25.0,
+      fontWeight: FontWeight.w800,
+      height: 1,
+      color: Colors.white,
+    )
+        // color: kGQuizWhiteBackground,
+        // iconTheme: const IconThemeData(color: kGQuizOnLightSurface),
+        // foregroundColor: kGQuizOnLightSurface,
+        ),
+    textSelectionTheme: TextSelectionThemeData(
+        selectionColor: base.colorScheme.primary.withOpacity(0.25)),
     tabBarTheme: base.tabBarTheme.copyWith(
       labelStyle: base.textTheme.bodyText1.copyWith(fontFamily: 'Gilroy'),
       labelColor: base.textTheme.bodyText1.color,
@@ -59,15 +67,17 @@ TextTheme _gQuizLightTextTheme(TextTheme base) {
         ),
         headline4: base.headline4.copyWith(
           fontFamily: 'Gilroy',
-          // fontSize: 35.0,
+          fontSize: 30.0,
           fontWeight: FontWeight.w400,
           letterSpacing: 0.25,
+          color: Colors.white,
         ),
         headline5: base.headline5.copyWith(
           fontFamily: 'Gilroy',
           fontSize: 25.0,
           fontWeight: FontWeight.w800,
           height: 1,
+          color: Colors.white,
         ),
         headline6: base.headline6.copyWith(
           fontFamily: 'Gilroy',
@@ -104,7 +114,7 @@ TextTheme _gQuizLightTextTheme(TextTheme base) {
         button: base.button.copyWith(
           fontFamily: 'Gilroy',
           fontSize: 17.0,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w700,
           letterSpacing: 1.25,
           color: kGQuizAccent,
         ),
@@ -127,4 +137,3 @@ ColorScheme _gQuizLightColorScheme = const ColorScheme.light().copyWith(
   error: kGQuizError,
   onError: kGQuizOnLightSurface,
 );
-

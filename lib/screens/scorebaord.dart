@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gquiz/constants/constants.dart';
-import 'package:gquiz/global/global.dart' as globals;
 import 'package:gquiz/models/user.dart';
 import 'package:gquiz/services/database_service.dart';
 
@@ -30,13 +29,7 @@ class _ScoreboardState extends State<Scoreboard> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: const Color(0xff5DE2A2),
-        title: Text(
-          "Leaderboard",
-          style: theme.textTheme.headline5.copyWith(
-            color: Colors.white,
-            fontSize: 25,
-          ),
-        ),
+        title: const Text("Leaderboard"),
       ),
       body: FutureBuilder(
           future: _databaseService.getUsers(),
@@ -135,7 +128,7 @@ Widget topPlayersWidget(
           SvgPicture.asset(icon),
           Spacing.verticalSpace8,
           CircleAvatar(
-            backgroundColor: globals.colorList[user.color],
+            backgroundColor: Color(int.parse(user.color),),
             radius: radius,
             child: Text(
               user.initials,
@@ -192,7 +185,7 @@ class UserItem extends StatelessWidget {
             tileColor: Colors.white,
             leading: CircleAvatar(
               radius: 28,
-              backgroundColor: globals.colorList[user.color],
+              backgroundColor: Color(int.parse(user.color),),
               child: Center(
                 child: Text(
                   user.initials,

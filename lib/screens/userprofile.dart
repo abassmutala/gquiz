@@ -110,7 +110,7 @@ class _UserProfileState extends State<UserProfile> {
                         width: 170,
                         height: 170,
                         decoration: BoxDecoration(
-                            color: globals.colorListfixed[globals.myUser.color],
+                            color: Color(int.parse(globals.myUser.color),),
                             shape: BoxShape.circle),
                         child: Center(
                             child: Text(

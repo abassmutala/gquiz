@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:gquiz/constants/constants.dart';
 import 'package:gquiz/dialogue/hero_dialogue.dart';
 import 'package:gquiz/models/question.dart';
 import 'package:gquiz/global/global.dart' as globals;
@@ -14,6 +15,7 @@ import 'package:gquiz/models/user.dart';
 import 'package:gquiz/models/userplay.dart';
 import 'package:gquiz/screens/play_vs.dart';
 import 'package:gquiz/services/connectService.dart';
+import 'package:gquiz/utils/utilities.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../adhelper.dart';
@@ -22,6 +24,8 @@ import 'home.dart';
 String category = "";
 
 class Battle extends StatefulWidget {
+  const Battle({Key key}) : super(key: key);
+
   @override
   _BattleState createState() => _BattleState();
 }
@@ -82,8 +86,9 @@ class _BattleState extends State<Battle> with TickerProviderStateMixin {
 
   uploadData() async {}
   loggedIn() {
-    Navigator.of(context).push(HeroDialogRoute(
-        builder: (context) => new CategoryDialogue(update: _update)));
+    Navigator.of(context).push(
+      HeroDialogRoute(builder: (context) => SignUpDialog()),
+    );
     print("not empty");
   }
 
@@ -330,7 +335,7 @@ class _BattleState extends State<Battle> with TickerProviderStateMixin {
           created: "3",
           birthday: "3",
           image: "",
-          color: globals.colorListnum[0],
+          color: Utilities.generateRandomColor(),
           level: levelList[nameList.indexOf(element)],
           xp: 30,
           score: 10,
@@ -360,45 +365,42 @@ class _BattleState extends State<Battle> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          width: MediaQuery.of(context).size.width,
-          height: 150,
-          decoration: BoxDecoration(
-            color: const Color(0xffC4D5FE),
-            borderRadius: BorderRadius.only(
-                bottomRight: Radius.circular(60),
-                bottomLeft: Radius.circular(60)),
-          ),
-        ),
-        Container(
-          height: MediaQuery.of(context).size.height,
-          child: Container(
+    final ThemeData theme = Theme.of(context);
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0.0,
+        title: const Text('Battle'),
+        backgroundColor: Color(0xffC4D5FE),
+      ),
+      body: Stack(
+        children: [
+          Container(
             width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: Stack(
-              children: [
-                Column(
+            height: 150,
+            decoration: const BoxDecoration(
+              color: Color(0xffC4D5FE),
+              borderRadius: BorderRadius.only(
+                  bottomRight: Radius.circular(60),
+                  bottomLeft: Radius.circular(60)),
+            ),
+          ),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    MyCard('Play 1on1', 'assets/one_one.svg', context),
-                    SizedBox(
-                      height: small ? 5 : 12,
-                    ),
-                    MyCard(
-                        "Play with friends", 'assets/play_friend.svg', context),
-                    SizedBox(
-                      height: 250,
-                    )
+                    myCard('Play 1on1', 'assets/one_one.svg', theme),
+                    Spacing.verticalSpace12,
+                    myCard("Play with friends", 'assets/play_friend.svg', theme),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -975,8 +977,7 @@ class _BattleState extends State<Battle> with TickerProviderStateMixin {
                                     width: 100,
                                     height: 100,
                                     decoration: BoxDecoration(
-                                        color: globals
-                                            .colorList[globals.myUser.color],
+                                        color: Color(int.parse(globals.myUser.color)),
                                         shape: BoxShape.circle),
                                     child: (Center(
                                         child: Text(
@@ -1015,9 +1016,7 @@ class _BattleState extends State<Battle> with TickerProviderStateMixin {
                                                 globals.myUser.level.toString(),
                                                 style: TextStyle(
                                                     fontSize: 12,
-                                                    color: globals
-                                                            .colorListfixed[
-                                                        globals.myUser.color],
+                                                    color: Color(int.parse(globals.myUser.color)),
                                                     fontFamily: "Poppins_Bold"),
                                               )
                                             ],
@@ -1087,8 +1086,7 @@ class _BattleState extends State<Battle> with TickerProviderStateMixin {
                                           width: 100,
                                           height: 100,
                                           decoration: BoxDecoration(
-                                              color: globals
-                                                  .colorList[myopponent.color],
+                                              color: Color(int.parse(myopponent.color)),
                                               shape: BoxShape.circle),
                                           child: (Center(
                                               child: Text(
@@ -1130,9 +1128,7 @@ class _BattleState extends State<Battle> with TickerProviderStateMixin {
                                                           .toString(),
                                                       style: TextStyle(
                                                           fontSize: 12,
-                                                          color: globals
-                                                                  .colorListfixed[
-                                                              myopponent.color],
+                                                          color: Color(int.parse(myopponent.color)),
                                                           fontFamily:
                                                               "Poppins_Bold"),
                                                     )
@@ -1220,30 +1216,31 @@ class _BattleState extends State<Battle> with TickerProviderStateMixin {
 
   offlineContainer() {
     return Container(
-        width: 300,
-        height: 150,
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(30)),
-        child: Column(
-          children: [
-            Icon(
-              Icons.cloud_off,
-              color: const Color(0xff333333),
-              size: 50,
-            ),
-            Text("You Are Offline",
-                style: TextStyle(
-                    color: Colors.black54,
-                    fontFamily: "Poppins_Bold",
-                    fontSize: 20)),
-            Text(
-              "connect to internet to use online features",
+      width: 300,
+      height: 150,
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(30)),
+      child: Column(
+        children: [
+          Icon(
+            Icons.cloud_off,
+            color: const Color(0xff333333),
+            size: 50,
+          ),
+          Text("You Are Offline",
               style: TextStyle(
-                  fontFamily: "Poppins", color: const Color(0xff999999)),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ));
+                  color: Colors.black54,
+                  fontFamily: "Poppins_Bold",
+                  fontSize: 20)),
+          Text(
+            "connect to internet to use online features",
+            style: TextStyle(
+                fontFamily: "Poppins", color: const Color(0xff999999)),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
   }
 
   final List<String> subjects = [
@@ -1259,53 +1256,47 @@ class _BattleState extends State<Battle> with TickerProviderStateMixin {
     'assets/science.svg',
   ];
 
-  Widget MyCard(String cardName, String icon, context) {
-    return Center(
-      child: InkWell(
-        onTap: () {
-          soundService.Click1();
-          soundService.playLocalAsset();
-          checkConnection();
-          if (offline) {
-            return;
-          }
-          if (!useronline) {
-            loggedIn();
-          }
-        },
-        child: Card(
-          elevation: 10,
-          margin: EdgeInsets.all(15.0),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-          child: Container(
-            height: small ? 230 : 260,
-            width: small ? 230 : 260,
-            padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 50.0),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                color: const Color(0xff4D7DF9)),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SvgPicture.asset(
-                  icon,
-                  width: small ? 90 : 120,
-                  color: Colors.white,
-                ),
-                SizedBox(
-                  height: 10.0,
-                ),
-                Text(
-                  cardName,
-                  style: TextStyle(
-                      fontSize: 30.0,
-                      fontFamily: 'Poppins_Bold',
-                      color: Colors.white),
-                  textAlign: TextAlign.center,
-                )
-              ],
-            ),
+  Widget myCard(String cardName, String icon, ThemeData theme) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(30),
+      onTap: () {
+        soundService.Click1();
+        soundService.playLocalAsset();
+        checkConnection();
+        if (offline) {
+          return;
+        }
+        if (!useronline) {
+          loggedIn();
+        }
+      },
+      child: Card(
+        elevation: 10,
+        margin: const EdgeInsets.all(16.0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        child: Container(
+          height: 260,
+          width: 260,
+          padding: const EdgeInsets.all(30),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            color: const Color(0xff4D7DF9),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                icon,
+                width: small ? 90 : 120,
+                color: Colors.white,
+              ),
+              Spacing.verticalSpace12,
+              Text(
+                cardName,
+                style: theme.textTheme.headline4,
+                textAlign: TextAlign.center,
+              )
+            ],
           ),
         ),
       ),
@@ -1313,10 +1304,73 @@ class _BattleState extends State<Battle> with TickerProviderStateMixin {
   }
 }
 
+class SignUpDialog extends StatelessWidget {
+  const SignUpDialog({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+            width: MediaQuery.of(context).size.width - 50,
+            height: 380,
+            padding: EdgeInsets.symmetric(horizontal: 30),
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black38.withOpacity(0.1),
+                    spreadRadius: 5,
+                    blurRadius: 15),
+              ],
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                child: ListView.separated(
+                    itemBuilder: (BuildContext context, int index) => Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {
+                              print("clicked");
+                              category = subjects[index];
+                              Navigator.of(context).pop();
+                              // widget.update(true);
+                            },
+                            child: ListTile(
+                              leading: SvgPicture.asset(
+                                subjectIcons[index],
+                                width: 30,
+                                color: Colors.white,
+                              ),
+                              title: Text(
+                                subjects[index],
+                                style: TextStyle(
+                                    fontFamily: 'Poppins_Bold',
+                                    color: Colors.white,
+                                    fontSize: 25),
+                              ),
+                            ),
+                          ),
+                        ),
+                    separatorBuilder: (BuildContext context, int index) {
+                      return Divider();
+                    },
+                    itemCount: subjects.length),
+              ),
+            )),
+      ],
+    );
+
+  }
+}
+
 class CategoryDialogue extends StatefulWidget {
   final ValueChanged<bool> update;
 
-  CategoryDialogue({this.update});
+  const CategoryDialogue({Key key, this.update}) : super(key: key);
 
   @override
   _CategoryDialogueState createState() => _CategoryDialogueState();

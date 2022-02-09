@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:gquiz/constants/app_colors.dart';
 import 'package:gquiz/constants/app_themes.dart';
 import 'package:gquiz/constants/constants.dart';
+import 'package:gquiz/services/push_notifications_service.dart';
 import 'package:gquiz/spin.dart';
 import 'package:gquiz/models/score.dart';
 import 'package:gquiz/screens/battle.dart';
@@ -27,7 +28,7 @@ void main() {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
   );
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -43,7 +44,7 @@ SharedPreferences _prefs;
 getProfile() async {
   await FirebaseFirestore.instance
       .collection("User")
-      .doc(_prefs.getString("firstname"))
+      .doc(_prefs.getString("username"))
       .snapshots()
       .listen((event) {
     listenxp();
@@ -69,7 +70,7 @@ getProfile() async {
 getscore() async {
   await FirebaseFirestore.instance
       .collection("Score")
-      .doc(_prefs.getString("firstname"))
+      .doc(_prefs.getString("username"))
       .get()
       .then((value) async {
     if (value.exists) {
@@ -126,7 +127,7 @@ getscore() async {
 
       await FirebaseFirestore.instance
           .collection("Score")
-          .doc(_prefs.getString("firstname"))
+          .doc(_prefs.getString("username"))
           .set({"subjects": subjects}).then((value) => debugPrint("done"));
     }
   });
@@ -164,7 +165,7 @@ class _MyAppState extends State<MyApp> {
   getprefs() async {
     _prefs = await SharedPreferences.getInstance();
 
-    if (_prefs.getString('firstname') == null) {
+    if (_prefs.getString('username') == null) {
       setState(() {
         form = true;
       });
@@ -260,6 +261,12 @@ class _MyBottomNavigationState extends State<MyBottomNavigation> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    PushNotificationService().initialise();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     List<Widget> _children = [
@@ -277,15 +284,17 @@ class _MyBottomNavigationState extends State<MyBottomNavigation> {
       appBar: _profile
           ? AppBar(
               leading: GestureDetector(
-                  onTap: () {
-                    _update(false);
-                  },
-                  child: Container(
-                      padding: const EdgeInsets.all(15),
-                      child: SvgPicture.asset(
-                        "assets/backbutton.svg",
-                        height: 20,
-                      ))),
+                onTap: () {
+                  _update(false);
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(15),
+                  child: SvgPicture.asset(
+                    "assets/backbutton.svg",
+                    height: 20,
+                  ),
+                ),
+              ),
               elevation: 0,
               backgroundColor: const Color(0xffFED330),
               title: Text("Profile", style: theme.textTheme.headline6),

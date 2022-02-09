@@ -1055,8 +1055,7 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
                                         width: large ? 60 : 50,
                                         height: large ? 60 : 50,
                                         decoration: BoxDecoration(
-                                          color:
-                                              colorList[globals.myUser.color],
+                                          color: Color(int.parse(globals.myUser.color),),
                                           shape: BoxShape.circle,
                                         ),
                                         child: Center(
@@ -2325,7 +2324,7 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
                             width: 55,
                             height: 55,
                             decoration: BoxDecoration(
-                                color: colorList[globals.myUser.color],
+                                color: Color(int.parse(globals.myUser.color),),
                                 shape: BoxShape.circle),
                             child: Center(
                                 child: Text(

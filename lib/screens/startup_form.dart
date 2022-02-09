@@ -34,46 +34,56 @@ class _StartUpFormState extends State<StartUpForm> {
 
   Widget welcome(ThemeData theme) {
     return Container(
-      padding: const EdgeInsets.all(48),
       decoration: const BoxDecoration(
         image: DecorationImage(
             image: AssetImage("assets/startback.png"), fit: BoxFit.cover),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Spacing.verticalSpace48,
-          SvgPicture.asset("assets/logo.svg"),
-          Spacing.verticalSpace16,
-          Text(
-            "Welcome\nto the\nlearning app",
-            style: theme.textTheme.headline5,
-          ),
-          Spacing.verticalSpace24,
-          Text(
-            "The App that lets you learn new things in a better way",
-            style: theme.textTheme.headline6,
-          ),
-          const Spacer(),
-          SvgPicture.asset(
-            "assets/space.svg",
-            width: 290,
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: TextButton(
-              onPressed: () {
-                _viewController.nextPage(
-                    duration: TimeLengths.halfSec, curve: Curves.easeIn);
-              },
-              child: const Icon(
-                Icons.arrow_forward_ios_rounded,
-                color: Colors.black,
+      child: SafeArea(
+        child: Column(
+          children: [
+            Flexible(
+              child: Container(
+                padding: const EdgeInsets.all(48),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SvgPicture.asset("assets/logo.svg"),
+                    Spacing.verticalSpace16,
+                    Text(
+                      "Welcome\nto the\nlearning app",
+                      style: theme.textTheme.headline5,
+                    ),
+                    Spacing.verticalSpace24,
+                    Text(
+                      "The App that lets you learn new things in a better way",
+                      style: theme.textTheme.headline6,
+                    ),
+                    const Spacer(),
+                    SvgPicture.asset(
+                      "assets/space.svg",
+                      width: 290,
+                    ),
+                  ],
+                ),
               ),
             ),
-          )
-        ],
+            Container(
+              alignment: Alignment.bottomRight,
+              margin: kTabLabelPadding,
+              child: TextButton(
+                onPressed: () {
+                  _viewController.nextPage(
+                      duration: TimeLengths.halfSec, curve: Curves.easeIn);
+                },
+                child: const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: Colors.black,
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -163,7 +173,8 @@ class SignUpView extends StatelessWidget {
         duration: TimeLengths.fullSec,
         decoration: BoxDecoration(
           color: theme.colorScheme.primary,
-          borderRadius: Corners.xlBorder,
+          borderRadius: BorderRadius.only(
+              bottomLeft: Corners.xlRadius, bottomRight: Corners.xlRadius),
         ),
         child: SafeArea(
           child: Column(
@@ -282,6 +293,7 @@ class ProfileView extends StatefulWidget {
 bool loading = false;
 
 class _ProfileViewState extends State<ProfileView> {
+  bool nameIsTaken;
   String fullNameInitials() {
     return Utilities.getInitials(
       firstname: widget.firstName,
@@ -289,10 +301,31 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
+  void selectName(option) {
+    setState(() {
+      option['isSelected'] = !option['isSelected'];
+    });
+  }
+
+  Future<bool> checkUsernameAvilability(String docID) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("User")
+          .doc(docID)
+          .get()
+          .then((doc) {
+        nameIsTaken = doc.exists;
+        debugPrint(nameIsTaken.toString());
+      });
+      return nameIsTaken;
+    } catch (e) {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    colorList.shuffle();
-    var myColor = colorList[0];
+    var myColor = Utilities.generateRandomColor();
     final ThemeData theme = Theme.of(context);
 
     return Scaffold(
@@ -320,18 +353,21 @@ class _ProfileViewState extends State<ProfileView> {
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            _userAvatar(theme),
+                            _userAvatar(theme, myColor),
                             Spacing.verticalSpace24,
                             Hero(
                               tag: 'text',
                               child: Text(
                                 '${widget.firstName} ${widget.lastName}',
                                 style: theme.textTheme.headline5,
+                                textAlign: TextAlign.center,
                               ),
                             ),
                             Spacing.verticalSpace16,
-                            usernameOptions(theme),
-
+                            UsernameChoice(
+                              firstName: widget.firstName,
+                              lastName: widget.lastName,
+                            ),
                             Spacing.verticalSpace16,
                             // Text(
                             //   "telnumber",
@@ -356,39 +392,56 @@ class _ProfileViewState extends State<ProfileView> {
                     setState(() {
                       loading = false;
                     });
-                    String now =
-                        DateFormat("yyyy-MM-dd").format(DateTime.now());
-                    User myUser = User();
-                    myUser = User(
-                      firstname: widget.firstName,
-                      lastname: widget.lastName,
-                      initials: fullNameInitials(),
-                      gender: gender,
-                      number: '',
-                      created: now,
-                      birthday: "",
-                      image: null,
-                      color: globals.colorListfixed.indexOf(myColor),
-                      level: 1,
-                      xp: 0,
-                      score: 0,
-                      coins: 0,
-                      rank: 0,
-                    );
+                    if (username == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('Please, select a username'),
+                      ));
+                    }
+                    checkUsernameAvilability(username).then((value) async {
+                      debugPrint(value.toString());
+                      if (value == true) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                'The selected username is already taken by another user. Please, select a different username'),
+                          ),
+                        );
+                      } else {
+                        String now =
+                            DateFormat("yyyy-MM-dd").format(DateTime.now());
+                        User myUser = User(
+                          firstname: widget.firstName,
+                          lastname: widget.lastName,
+                          username: username,
+                          initials: fullNameInitials(),
+                          gender: gender,
+                          number: '',
+                          created: now,
+                          birthday: "",
+                          image: null,
+                          color: myColor,
+                          level: 1,
+                          xp: 0,
+                          score: 0,
+                          coins: 0,
+                          rank: 0,
+                        );
 
-                    await FirebaseFirestore.instance
-                        .collection("User")
-                        .doc(widget.firstName)
-                        .set(myUser.toJson());
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    await prefs.setString("firstname", widget.firstName);
-                    widget.update(prefs);
-                    Navigator.of(context).push(
-                      CustomPageRoute(
-                        builder: (context) => const MyApp(),
-                      ),
-                    );
+                        await FirebaseFirestore.instance
+                            .collection("User")
+                            .doc(username)
+                            .set(myUser.toJson());
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        await prefs.setString("username", username);
+                        widget.update(prefs);
+                        Navigator.of(context).push(
+                          CustomPageRoute(
+                            builder: (context) => const MyApp(),
+                          ),
+                        );
+                      }
+                    });
                   },
                   child: Text(
                     'Done',
@@ -403,54 +456,34 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  Hero _userAvatar(ThemeData theme) {
-    colorList.shuffle();
-    var myColor = colorList[0];
+  Hero _userAvatar(ThemeData theme, String myColor) {
     return Hero(
       tag: "profile",
       child: CircleAvatar(
-        radius: 110,
-        backgroundColor: myColor,
-        child: Center(
-          child: Text(
-            fullNameInitials(),
-            style: theme.textTheme.headline5.copyWith(
-              color: Colors.white,
-              fontSize: 100,
+        radius: 114,
+        backgroundColor: Color(
+          int.parse(myColor),
+        ),
+        child: CircleAvatar(
+          radius: 112,
+          backgroundColor: Colors.white,
+          child: CircleAvatar(
+            radius: 110,
+            backgroundColor: Color(
+              int.parse(myColor),
+            ),
+            child: Center(
+              child: Text(
+                fullNameInitials(),
+                style: theme.textTheme.headline5.copyWith(
+                  color: Colors.white,
+                  fontSize: 100,
+                ),
+              ),
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Wrap usernameOptions(ThemeData theme) {
-    return Wrap(
-      alignment: WrapAlignment.spaceAround,
-      children: [
-        RawChip(
-          onPressed: () {},
-          label: Text(
-            "${widget.firstName}${widget.lastName}".toLowerCase(),
-            style: theme.textTheme.subtitle1,
-          ),
-        ),
-        Spacing.horizontalSpace4,
-        RawChip(
-          onPressed: () {},
-          label: Text(
-            "${widget.firstName}_${widget.lastName}".toLowerCase(),
-            style: theme.textTheme.subtitle1,
-          ),
-        ),
-        RawChip(
-          onPressed: () {},
-          label: Text(
-            "${widget.firstName[0]}_${widget.lastName}".toLowerCase(),
-            style: theme.textTheme.subtitle1,
-          ),
-        ),
-      ],
     );
   }
 }
@@ -463,6 +496,8 @@ class CustomPageRoute extends MaterialPageRoute {
 }
 
 String gender = "";
+String username;
+
 // PhoneNumber number = PhoneNumber(isoCode: 'GH');
 // String _firstname, _lastname, telnumber;
 // String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
@@ -500,7 +535,8 @@ class _CustomRadioState extends State<CustomRadio> {
                       fontSize: 18,
                       color: gender == "Male" ? Colors.white : Colors.black),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                 decoration: BoxDecoration(
                     color: Colors.transparent,
                     border: Border.all(
@@ -514,10 +550,10 @@ class _CustomRadioState extends State<CustomRadio> {
           borderRadius: BorderRadius.circular(30),
           color: gender == "Female" ? Colors.black : Colors.white,
           child: InkWell(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(50),
             onTap: () {
+              // validate();
               setState(() {
-                // validate();
                 FocusScope.of(context).unfocus();
                 gender = "Female";
                 debugPrint(gender);
@@ -531,17 +567,81 @@ class _CustomRadioState extends State<CustomRadio> {
                       fontSize: 18,
                       color: gender == "Female" ? Colors.white : Colors.black),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                 decoration: BoxDecoration(
+                    color: Colors.transparent,
                     border: Border.all(
                         width: 1,
-                        color: gender == "Female"
-                            ? Colors.black
-                            : Colors.grey[300]),
-                    borderRadius: BorderRadius.circular(30))),
+                        color: gender == "Female" ? Colors.black : Colors.grey),
+                    borderRadius: BorderRadius.circular(50))),
           ),
-        )
+        ),
       ],
+    );
+  }
+}
+
+class UsernameChoice extends StatefulWidget {
+  const UsernameChoice({
+    Key key,
+    @required this.firstName,
+    @required this.lastName,
+  }) : super(key: key);
+  final String firstName;
+  final String lastName;
+
+  @override
+  UsernameChoiceState createState() => UsernameChoiceState();
+}
+
+class UsernameChoiceState extends State<UsernameChoice>
+    with TickerProviderStateMixin {
+  int _selectedIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    List<String> _options = [
+      '${widget.firstName.replaceAll(RegExp(r' '), '')}${widget.lastName.replaceAll(RegExp(r' '), '')}',
+      '${widget.firstName.replaceAll(RegExp(r' '), '_')}_${widget.lastName.replaceAll(RegExp(r' '), '_')}',
+      '${widget.firstName[0]}.${widget.lastName.replaceAll(RegExp(r' '), '.')}',
+      '${widget.firstName[0]}_${widget.lastName.replaceAll(RegExp(r' '), '_')}',
+      '${widget.firstName.replaceAll(RegExp(r' '), '_')}_${widget.lastName[0]}',
+    ];
+
+    List<Widget> chips = [];
+
+    for (int i = 0; i < _options.length; i++) {
+      Widget choiceChip = Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: ChoiceChip(
+          selected: _selectedIndex == i,
+          label: Text(
+            _options[i].toLowerCase(),
+            style: theme.textTheme.subtitle2.copyWith(
+                color: _selectedIndex == i ? Colors.white : Colors.black87),
+          ),
+          backgroundColor: Colors.grey[400],
+          selectedColor: Colors.black87,
+          onSelected: (bool selected) {
+            setState(() {
+              if (selected) {
+                _selectedIndex = i;
+              }
+              username = _options[i].toLowerCase();
+            });
+            debugPrint(username);
+          },
+        ),
+      );
+
+      chips.add(choiceChip);
+    }
+
+    return Wrap(
+      alignment: WrapAlignment.center,
+      children: chips,
     );
   }
 }
